@@ -1,6 +1,6 @@
 # Esobot
 
-Esobot is a bot for the esoteric programming language ("esolang") [Discord server](https://discord.gg/vwsaeee).
+Esobot is a bot for the esoteric programming language ("esolang") [Discord server](https://discord.gg/3UXSK5p).
 
 Use `!help` to view available commands.
 
