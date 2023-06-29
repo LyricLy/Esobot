@@ -303,6 +303,36 @@ class Temporary(commands.Cog):
             msg += f"That's {c}."
             await message.channel.send(msg)
 
+        if (parts := message.content.split(' ', maxsplit=1))[0] == "?chairinfo":
+            from unicodedata import name
+            string = ""
+            for c in parts[1]:
+                string+=f"\n`\\U{ord(c):>08}`: {c} "
+                if (m := re.fullmatch(r"(.*)LATIN SMALL LETTER (.*)\bH (.*)", name(c, "")+" ")):
+                    string += f"{m[1]+m[2]}CHAIR {m[3]}".strip()
+                    continue
+                if (m := re.fullmatch(r"CYRILLIC (.*)LETTER (.*)CHE (.*)", name(c, "")+" ")):
+                    string += f"TURNED {m[1].replace('CAPITAL','BIG')+m[2]}CHAIR {m[3]}".strip()
+                    continue
+                string += {
+                    "🪑": "CHAIR", "💺": "CHAIR", "🛋️": "DOUBLE CHAIR", "⑁": "OPTICAL CHARACTER RECOGNIZABLE CHAIR",
+                    "♿": "SYMBOLIC WHEELED CHAIR", "🦽": "MANUAL WHEELED CHAIR", "🦼": "AUTOMATIC WHEELED CHAIR",
+                    "µ": "VERTICALLY-FLIPPED CHAIR", "ɥ": "TURNED CHAIR", "ɰ": "DOUBLE TURNED CHAIR",
+                    "ꜧ": "UNEVEN CHAIR", "ћ": "SLAVIC CHAIR WITH STROKE", "ђ": "UNEVEN CHAIR WITH STROKE",
+                    "Һ": "SLAVIC BIG CHAIR", "һ": "SLAVIC SMALL CHAIR",
+                    "Ꚕ": "SLAVIC BIG CHAIR WITH HOOK", "ꚕ": "SLAVIC SMALL CHAIR WITH HOOK",
+                    "Ԧ": "SLAVIC BIG CHAIR WITH DESCENDER", "ԧ": "SLAVIC SMALL CHAIR WITH DESCENDER",
+                    "Ի": "BIG CHAIR WITH SHORT LEG", "ի": "SMALL CHAIR WITH LONG LEG",
+                    "Կ": "TURNED BIG CHAIR WITH SHORT LEG", "կ": "TURNED SMALL CHAIR WITH LONG LEG",
+                    "Ϧ": "FANCY CHAIR", "փ": "ABOMINATION",
+                    "Ⴗ": "GEORGIAN TURNED CHAIR",
+                    "۲": "NUMERIC VERTICALLY-FLIPPED CHAIR", "ށ": "CURSIVE VERTICALLY-FLIPPED CHAIR",
+                    "Ꮒ": "BIG CHAIR", "Ꮵ": "FANCY CHAIR",
+                    "ᖹ": "HORIZONTALLY-FLIPPED SYLLABIC CHAIR", "ᖺ": "SYLLABIC CHAIR", "ᖻ": "TURNED SYLLABIC CHAIR",
+                    "ᚴ": "VERTICALLY-FLIPPED NORDIC CHAIR",
+                    "ℎ": "ITALIC CHAIR", "ℏ": "ITALIC CHAIR WITH STROKE"
+                }.get(c, "NOT A CHAIR")
+        await message.channel.send(string)
 
 async def setup(bot):
     await bot.add_cog(Temporary(bot))
