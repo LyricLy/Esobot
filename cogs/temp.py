@@ -331,7 +331,7 @@ class Temporary(commands.Cog):
                         "ᚴ": "VERTICALLY-FLIPPED NORDIC CHAIR",
                         "ℎ": "ITALIC CHAIR", "ℏ": "ITALIC CHAIR WITH STROKE"
                     }.get(c, "NOT A CHAIR")
-                lines.append(f"`\\U{ord(c):>08}`: {title} - {c}")
+                lines.append(f"`\\U{ord(c):>08x}`: {title} - {c}")
             await message.channel.send("\n".join(lines))
 
 async def setup(bot):
