@@ -1,4 +1,5 @@
 import math
+import time
 import asyncio
 from io import BytesIO
 from collections import defaultdict
@@ -223,12 +224,16 @@ class Qwd(commands.Cog, name="QWD"):
         self.bot = bot
         self.qwdies = defaultdict(dict, load_json(QWD_SAVES))
         self.leaderboards = {k: parse_leaderboard(v) for k, v in load_json(QWD_LEADERBOARDS).items()}
+        self.vore = load_json(VORE_STORE)
         self.aliases = load_json(QWD_LB_ALIASES)
         self.qwd = None
 
     def save_leaderboards(self):
         save_json(QWD_LEADERBOARDS, {k: str(v) for k, v in self.leaderboards.items()})
         save_json(QWD_LB_ALIASES, self.aliases)
+    
+    def save_vore(self):
+        save_json(VORE_STORE, self.vore)
 
     def cog_check(self, ctx):
         if not self.qwd:
@@ -407,6 +412,20 @@ class Qwd(commands.Cog, name="QWD"):
             return await ctx.send("A leaderboard must have at least one person on it to use `graph`.")
         image = await asyncio.to_thread(render_graph, people)
         await ctx.send(file=discord.File(image, filename='height_graph.png'))
+
+    @commands.group(invoke_without_command=True, aliases=["days"])
+    @commands.guild_only()
+    async def vore(self, ctx):
+        await ctx.send(f"<t:{max(self.vore)}:R>")
+
+    @vore.command(aliases=["0"])
+    async def update(self, ctx):
+        self.vore.append(int(time.time()))
+        self.save_vore()
+        await ctx.send("Done. Now I'm hungry!")
+        
+
+
 
 
 async def setup(bot):
