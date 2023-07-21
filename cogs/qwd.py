@@ -1,5 +1,4 @@
 import math
-import time
 import asyncio
 from io import BytesIO
 from collections import defaultdict
@@ -231,9 +230,6 @@ class Qwd(commands.Cog, name="QWD"):
     def save_leaderboards(self):
         save_json(QWD_LEADERBOARDS, {k: str(v) for k, v in self.leaderboards.items()})
         save_json(QWD_LB_ALIASES, self.aliases)
-    
-    def save_vore(self):
-        save_json(VORE_STORE, self.vore)
 
     def cog_check(self, ctx):
         if not self.qwd:
@@ -413,19 +409,18 @@ class Qwd(commands.Cog, name="QWD"):
         image = await asyncio.to_thread(render_graph, people)
         await ctx.send(file=discord.File(image, filename='height_graph.png'))
 
-    @commands.group(invoke_without_command=True, aliases=["days"])
+    @commands.group(invoke_without_command=True, aliases=["voredays", "dayssincevore"])
     @commands.guild_only()
     async def vore(self, ctx):
-        await ctx.send(f"<t:{max(self.vore)}:R>")
+        if not self.vore:
+            await ctx.send("forever")
+        await ctx.send(discord.utils.format_dt(discord.utils.snowflake_time(self.vore[-1])), "R")
 
     @vore.command(aliases=["0"])
     async def update(self, ctx):
-        self.vore.append(int(time.time()))
-        self.save_vore()
+        self.vore.append(ctx.message.id)
+        save_json(VORE_STORE, self.vore)
         await ctx.send("Done. Now I'm hungry!")
-        
-
-
 
 
 async def setup(bot):
