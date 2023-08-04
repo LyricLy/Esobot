@@ -126,7 +126,7 @@ class ReactionRoles(commands.Cog, name="Reaction roles"):
     @commands.Cog.listener()
     async def on_raw_message_delete(self, payload):
         self.messages.pop(str(payload.message_id), None)
-        self.save()     
+        self.save()
 
     async def dry(self, method, payload):
         if data := self.messages.get(str(payload.message_id)):

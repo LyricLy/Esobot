@@ -255,7 +255,7 @@ class Qwd(commands.Cog, name="QWD"):
         if not address:
             await ctx.send("Successfully cleared your address.")
         else:
-            await ctx.send("Successfully set your address.")     
+            await ctx.send("Successfully set your address.")
 
     def true_key(self, key):
         return self.aliases.get(key, key)
@@ -427,4 +427,3 @@ class Qwd(commands.Cog, name="QWD"):
 
 async def setup(bot):
     await bot.add_cog(Qwd(bot))
-
