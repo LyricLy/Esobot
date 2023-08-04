@@ -3,6 +3,7 @@ import asyncio
 from io import BytesIO
 from collections import defaultdict
 from tokenize import TokenError
+import aiohttp
 
 import discord
 from PIL import Image
@@ -423,6 +424,42 @@ class Qwd(commands.Cog, name="QWD"):
         self.vore.append(ctx.message.id)
         save_json(VORE_STORE, self.vore)
         await ctx.send("Done. Now I'm hungry!")
+
+    @commands.group(invoke_without_command=True, aliases=["temp"])
+    @commands.guild_only()
+    async def weather(self, ctx, *, target: discord.Member = None):
+        """Display current weather at a user's location."""
+        user = ctx.author if not target else target
+        location = self.qwdies[str(user.id)].get("weatherLoc")
+        if not location:
+            await ctx.send(f"{user} has no location set!")
+        else:
+            url = "https://wttr.in/" + location
+            async with self.bot.session.get(url, params={"format": "j1"}) as resp:
+                data = await resp.json()
+                current = data["current_condition"][0]
+                cel = current["temp_C"] + "°C"
+                far = current["temp_F"] + "°F"
+                desc = current["weatherDesc"][0]["value"]
+                embed = discord.Embed(
+                    title=f"{user.name}'s Current Weather:",
+                    description=f"{desc}, {cel} ({far})"
+                )
+                await ctx.send(embed=embed)
+
+    @weather.command(name="set")
+    @commands.guild_only()
+    async def set_location(self, ctx, *, location=""):
+        """
+            Set your location to use for weather info. You can clear your location by using `set` without an argument.
+            Accepted formats are those accepted by [wttr](https://wttr.in/:help), you probably want to use city name, area code, or GPS coordinates.
+        """
+        self.qwdies[str(ctx.author.id)]["weatherLoc"] = location
+        save_json(QWD_SAVES, self.qwdies)
+        if not location:
+            await ctx.send("Successfully cleared your location.")
+        else:
+            await ctx.send("Successfully set your location.")
 
 
 async def setup(bot):
