@@ -70,7 +70,7 @@ class Time(commands.Cog):
                 message = "You don't have a timezone set. You can set one with `time set`."
             else:
                 p = get_pronouns(user)
-                message = f'{p.Subj()} {p.plrnt("do", "es")} have a timezone set.'
+                message = f'{p.they_do_not()} have a timezone set.'
             await show_error(ctx, message, "Timezone not set")
         else:
             embed = make_embed(

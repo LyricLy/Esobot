@@ -3,7 +3,6 @@ import asyncio
 from io import BytesIO
 from collections import defaultdict
 from tokenize import TokenError
-import aiohttp
 
 import discord
 from PIL import Image
@@ -243,7 +242,7 @@ class Qwd(commands.Cog, name="QWD"):
         """Reveal someone's address if they have set it through the bot. Must be used in a guild; the answer will be DMed to you."""
         p = get_pronouns(target)
         if not (addr := self.qwdies[str(target.id)].get("address")):
-            return await ctx.send(f'{p.Subj()} {p.plrnt("do", "es")} have an address set.')
+            return await ctx.send(f'{p.they_do_not()} have an address set.')
         await ctx.author.send(addr)
         await ctx.send(f"Alright, I've DMed you {p.pos_det} address.")
 
@@ -291,7 +290,7 @@ class Qwd(commands.Cog, name="QWD"):
         value = self.data_of(member or ctx.author, lb.name)
         p = get_pronouns(member)
         if not value:
-            return await ctx.send(f'{p.Subj()} {p.plrnt("do", "es")} have a `{lb.name}` value set.')
+            return await ctx.send(f'{p.they_do_not()} have a `{lb.name}` value set.')
         await ctx.send(embed=discord.Embed(title=f"{member.global_name or member.name}'s `{lb.name}`", description=lb.format(value), colour=discord.Colour(0x75ffe3)))
 
     @leaderboard.command()
@@ -411,9 +410,8 @@ class Qwd(commands.Cog, name="QWD"):
         await ctx.send(file=discord.File(image, filename='height_graph.png'))
 
     @commands.group(invoke_without_command=True, aliases=["voredays", "dayssincevore"])
-    @commands.guild_only()
     async def vore(self, ctx):
-        """Mark a vore moment."""
+        """See when the last vore moment was."""
         if not self.vore:
             return await ctx.send("forever")
         await ctx.send(discord.utils.format_dt(discord.utils.snowflake_time(self.vore[-1]), "R"))
@@ -421,40 +419,45 @@ class Qwd(commands.Cog, name="QWD"):
     @vore.command(aliases=["0"])
     @commands.guild_only()
     async def update(self, ctx):
+        """Mark that a vore moment has occurred."""
         self.vore.append(ctx.message.id)
         save_json(VORE_STORE, self.vore)
         await ctx.send("Done. Now I'm hungry!")
 
     @commands.group(invoke_without_command=True, aliases=["temp"])
-    @commands.guild_only()
     async def weather(self, ctx, *, target: discord.Member = None):
         """Display current weather at a user's location."""
-        user = ctx.author if not target else target
-        location = self.qwdies[str(user.id)].get("weatherLoc")
+        target = target or ctx.author
+        p = get_pronouns(target)
+        location = self.qwdies[str(target.id)].get("weather")
         if not location:
-            await ctx.send(f"{user} has no location set!")
-        else:
-            url = "https://wttr.in/" + location
-            async with self.bot.session.get(url, params={"format": "j1"}) as resp:
-                data = await resp.json()
-                current = data["current_condition"][0]
-                cel = current["temp_C"] + "°C"
-                far = current["temp_F"] + "°F"
-                desc = current["weatherDesc"][0]["value"]
-                embed = discord.Embed(
-                    title=f"{user.name}'s Current Weather:",
-                    description=f"{desc}, {cel} ({far})"
-                )
-                await ctx.send(embed=embed)
+            return await ctx.send(f"{p.they_do_not()} have a location set.")
+
+        async with self.bot.session.get(f"https://wttr.in/{location}", params={"format": "j1"}) as resp:
+            data = await resp.json()
+    
+        current = data["current_condition"][0]
+        cel = current["temp_C"]
+        far = current["temp_F"]
+        desc = current["weatherDesc"][0]["value"]
+    
+        embed = discord.Embed(
+            title=f"{target.name}'s current weather",
+            description=f"{desc}, {cel}°C ({far}°F)"
+        )
+        await ctx.send(embed=embed)
 
     @weather.command(name="set")
-    @commands.guild_only()
     async def set_location(self, ctx, *, location=""):
+        """Set your location to use for weather info. You can clear your location by using `set` without an argument.
+
+        Accepted formats are those accepted by [wttr](https://wttr.in/:help). You probably want to use a city name, area code, or GPS coordinates.
         """
-            Set your location to use for weather info. You can clear your location by using `set` without an argument.
-            Accepted formats are those accepted by [wttr](https://wttr.in/:help), you probably want to use city name, area code, or GPS coordinates.
-        """
-        self.qwdies[str(ctx.author.id)]["weatherLoc"] = location
+        async with self.bot.session.head(f"https://wttr.in/{location}") as resp:
+            if resp.status >= 400:
+                return await ctx.send("Unknown location. See the [wttr documentation](https://wttr.in/:help).")
+
+        self.qwdies[str(ctx.author.id)]["weather"] = location
         save_json(QWD_SAVES, self.qwdies)
         if not location:
             await ctx.send("Successfully cleared your location.")

@@ -121,6 +121,9 @@ class Pronouns:
     def plrnt(self, a, b):
         return self.plr(a, b) + "n't"
 
+    def they_do_not(self):
+        return f'{self.Subj()} {self.plrnt("do", "es")}'
+
 
 pronoun_sets = {
     "he/him": Pronouns("he", "him", "his", "his", "himself", False),
