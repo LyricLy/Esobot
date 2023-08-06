@@ -449,11 +449,15 @@ class Qwd(commands.Cog, name="QWD"):
         current = data["current_condition"][0]
         cel = current["temp_C"]
         far = current["temp_F"]
+        maxCel = data["weather"][0]["maxtempC"]
+        maxFar = data["weather"][0]["maxtempF"]
+        minCel = data["weather"][0]["mintempC"]
+        minFar = data["weather"][0]["mintempF"]
         desc = current["weatherDesc"][0]["value"]
-    
+
         embed = discord.Embed(
             title=f"Current weather in {area}",
-            description=f"{desc}, {cel}°C ({far}°F)"
+            description=f"{desc}, {cel}°C ({far}°F)\n\nToday's High: {maxCel}°C ({maxFar}°F)\nToday's Low: {minCel}°C ({minFar}°F)"
         )
         await ctx.send(embed=embed)
 
