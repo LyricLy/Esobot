@@ -447,17 +447,18 @@ class Qwd(commands.Cog, name="QWD"):
 
         area = ", ".join([t for k in ["areaName", "region", "country"] if (t := data["nearest_area"][0][k][0]["value"])])
         current = data["current_condition"][0]
-        cel = current["temp_C"]
-        far = current["temp_F"]
-        maxCel = data["weather"][0]["maxtempC"]
-        maxFar = data["weather"][0]["maxtempF"]
-        minCel = data["weather"][0]["mintempC"]
-        minFar = data["weather"][0]["mintempF"]
+        c = current["temp_C"]
+        f = current["temp_F"]
+        weather = data["weather"][0]
+        max_c = weather["maxtempC"]
+        max_f = weather["maxtempF"]
+        min_c = weather["mintempC"]
+        min_f = weather["mintempF"]
         desc = current["weatherDesc"][0]["value"]
 
         embed = discord.Embed(
             title=f"Current weather in {area}",
-            description=f"{desc}, {cel}°C ({far}°F)\n\nToday's High: {maxCel}°C ({maxFar}°F)\nToday's Low: {minCel}°C ({minFar}°F)"
+            description=f"{desc}, {c}°C ({f}°F)\n\nToday's high: {max_c}°C ({max_f}°F)\nToday's low: {min_c}°C ({min_f}°F)"
         )
         await ctx.send(embed=embed)
 
