@@ -82,7 +82,7 @@ class Japanese(commands.Cog):
 
     @commands.command(aliases=["jatrans", "transja", "jtrans", "jptrans", "transjp", "transj", "tj", "jtr", "jpt", "jt",
                                "whatdidlyricjustsay", "what'dlyricsay", "whtdlysay", "wdls", "wls", "what",
-                               "weebtrans", "weebt", "deweeb", "unweeb", "transweeb", "tweeb", "tw",
+                               "weebtrans", "weebt", "deweeb", "unweeb", "undweeb", "transweeb", "tweeb", "tw",
                                ";)", "forumbra", "inadequateweeb", "inadqweeb", "otherlanguagesscareme",
                                "otherlangsscareme", "that'snotenglish", "notenglish", "noen", "日本語から",
                                "ifyouhaveajapaneseimewhyareyouusingashittygoogletranslatecommand", "ifuhvajpimeyruusingshitgtcmd"])
