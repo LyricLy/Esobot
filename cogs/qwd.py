@@ -477,7 +477,7 @@ class Qwd(commands.Cog, name="QWD"):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.guild == self.qwd and message.content.startswith("!mja"):
-            word1, word2 = message.content.split(" ", 1)
+            word1, word2 = message.content.rsplit(maxsplit=1)
             try:
                 n = int(word2.strip())
             except ValueError:
