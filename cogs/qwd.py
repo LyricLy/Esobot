@@ -10,7 +10,7 @@ from tokenize import TokenError
 import discord
 from PIL import Image
 from discord.ext import commands
-from pint import UnitRegistry, UndefinedUnitError, DimensionalityError, formatting
+from pint import UnitRegistry, UndefinedUnitError, DimensionalityError, formatting, register_unit_format
 from typing import Optional, Union
 
 from utils import get_pronouns, EmbedPaginator
@@ -19,10 +19,10 @@ from utils import get_pronouns, EmbedPaginator
 ureg = UnitRegistry(autoconvert_offset_to_baseunit=True)
 ureg.separate_format_defaults = True
 
+@register_unit_format("Pc")
 def format_pretty_cool(unit, registry, **options):
-    opts = {**formatting._FORMATS["P"], "division_fmt": " / ", **options}
+    opts = {**registry.formatter._formatters["P"], "division_fmt": " / ", **options}
     return formatting.formatter(unit.items(), **opts)
-formatting._FORMATTERS["Pc"] = format_pretty_cool
 
 ureg.default_format = "~Pc"
 
@@ -237,7 +237,7 @@ def is_permutation_of(length, xs):
     return set(range(1, length+1)) == set(xs) and len(xs) == length
 
 def to_numbers(s):
-    return [int(x) for x in re.findall("\d+", s)]
+    return [int(x) for x in re.findall(r"\d+", s)]
 
 def merge(xs, ys, key):
     inversions = 0
