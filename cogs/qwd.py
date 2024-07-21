@@ -19,10 +19,14 @@ from utils import get_pronouns, EmbedPaginator
 ureg = UnitRegistry(autoconvert_offset_to_baseunit=True)
 ureg.separate_format_defaults = True
 
-@register_unit_format("Pc")
-def format_pretty_cool(unit, registry, **options):
-    opts = {**registry.formatter._formatters["P"], "division_fmt": " / ", **options}
-    return formatting.formatter(unit.items(), **opts)
+try:
+    @register_unit_format("Pc")
+    def format_pretty_cool(unit, registry, **options):
+        opts = {**registry.formatter._formatters["P"], "division_fmt": " / ", **options}
+        return formatting.formatter(unit.items(), **opts)
+except ValueError:
+    # already defined
+    pass
 
 ureg.default_format = "~Pc"
 
