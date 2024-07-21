@@ -68,8 +68,8 @@ class PluralKit(commands.Cog):
         self.settings_cache[message.author].autoproxy_guilds.pop(message.guild, None)
 
     async def autopsy(self, message):
-        # our job is to figure out the deal with the given webhook message is, and
-        # see if it was a missed pluralkit proxy message
+        # our job is to figure out the deal with the given webhook message and see if
+        # it was a missed pluralkit proxy message
 
         # first, see if pluralkit knows about it
         msg = await self.pk_get(f"/messages/{message.id}")
