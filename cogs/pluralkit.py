@@ -18,7 +18,6 @@ class PKSettings:
     autoproxy_guilds: dict[discord.Guild, Member] = field(default_factory=dict)
 
     def proc(self, message):
-        print(self)
         for (start, end), name in self.tags.items():
             if (not start or message.content.startswith(start)) and (not end or message.content.endswith(end)):
                 return name
