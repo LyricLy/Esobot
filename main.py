@@ -163,7 +163,13 @@ async def setup():
 
     bot.db = db
 
+async def close(old_close=bot.close):
+    await bot.session.close()
+    await bot.db.close()
+    await old_close()
+
 bot.setup_hook = setup
+bot.close = close
 
 async def wait_until_loaded():
     while bot.needed_extensions < bot.loaded_extensions:
