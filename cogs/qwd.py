@@ -318,7 +318,7 @@ I love you -> I don't love YOU
 nice -> YOU aren't nice
 """,
     "🪟": """
-Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its object or its subject with the word "**I**".
+Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its object with "**I**" or its subject with "**ME**".
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 For this reason, it is usually incorrect to replace "you" with "**I**", as it would make the sentence equivalent to the original.
@@ -330,12 +330,12 @@ Ice cream is good -> **I** am good
 I like ice cream -> **I** like ice cream
 oxford is fucking stupid -> **I** am fucking stupid
 I am fucking stupid -> **I** am fucking stupid
-idk why i didnt start using it earlier -> idk why **I** didnt start using it earlier
+idk why oxford didnt start using it earlier -> idk why oxford didnt start using ME earlier
 I love you -> **I** love you
 nice -> **I**'m nice
 """,
     "🔎": (_ := """
-Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its object or its subject with the word "**I**", while also inverting its meaning.
+Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its object with "**I**" or its subject with "ME", while also inverting its meaning.
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 For this reason, it is usually incorrect to replace "you" with "**I**", as it would make the sentence equivalent to the original.
@@ -348,7 +348,7 @@ Ice cream is good -> **I** am not good
 I like ice cream -> **I** do not like ice cream
 oxford is fucking stupid -> **I** am not fucking stupid
 I am fucking stupid -> **I** am not fucking stupid
-idk why i didnt start using it earlier -> I know why **I** didnt start using it earlier
+idk why oxford didnt start using it earlier -> I know why oxford didnt start using ME earlier
 I love you -> **I** don't love you
 nice -> **I**'m not nice
 """),
