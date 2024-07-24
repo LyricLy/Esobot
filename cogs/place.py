@@ -52,7 +52,7 @@ class EsobotPlace(commands.Cog):
     async def get_response(self):
         while True:
             try:
-                completion = (await openai.chat.completions.create(model="gpt-3.5-turbo", messages=ALWAYS_REMIND + self.messages)).choices[0].message
+                completion = (await openai.chat.completions.create(model="gpt-4o-mini", messages=ALWAYS_REMIND + self.messages)).choices[0].message
             except BadRequestError as e:
                 if e.code == "context_length_exceeded":
                     # brain bleed
