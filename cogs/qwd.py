@@ -803,9 +803,9 @@ class Qwd(commands.Cog, name="QWD"):
             results.append((r, completion.choices[0].message.content))
 
         if len(results) == 1:
-            await ctx.send(results[0][1])
+            await ctx.reply(results[0][1])
         else:
-            await ctx.send("\n".join(f"- {r}: {t}" for r, t in results))
+            await ctx.reply("\n".join(f"- {r}: {t}" for r, t in results))
 
 
 async def setup(bot):
