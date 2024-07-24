@@ -283,7 +283,7 @@ def message_embed(message):
 
 REACT_PROMPTS = {
     "🪞": """
-Your job is to "reflect" the meaning of a sentence, usually by replacing either its object or its subject with the word "YOU".
+Your job is to "reflect" the meaning of a sentence, usually by replacing either its subject or its object with the word "YOU".
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 For this reason, it is usually incorrect to replace "I" with "YOU", as it would make the sentence equivalent to the original.
@@ -300,7 +300,7 @@ I love you -> I love YOU
 nice -> YOU're nice
 """,
     "🥄": """
-Your job is to "reflect" the meaning of a sentence, usually by replacing either its object or its subject with the word "YOU", while also inverting its meaning.
+Your job is to "reflect" the meaning of a sentence, usually by replacing either its subject or its object with the word "YOU", while also inverting its meaning.
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 For this reason, it is usually incorrect to replace "I" with "YOU", as it would make the sentence equivalent to the original.
@@ -318,7 +318,7 @@ I love you -> I don't love YOU
 nice -> YOU aren't nice
 """,
     "🪟": """
-Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its object with "**I**" or its subject with "ME".
+Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its subject with "**I**" or its object with "ME".
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 For this reason, it is usually incorrect to replace "you" with "**I**", as it would make the sentence equivalent to the original.
@@ -335,7 +335,7 @@ I love you -> **I** love you
 nice -> **I**'m nice
 """,
     "🔎": (_ := """
-Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its object with "**I**" or its subject with "ME", while also inverting its meaning.
+Your job is to "redirect" the meaning of a sentence onto the person talking, usually by replacing either its subject with "**I**" or its object with "ME", while also inverting its meaning.
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 For this reason, it is usually incorrect to replace "you" with "**I**", as it would make the sentence equivalent to the original.
@@ -354,7 +354,7 @@ nice -> **I**'m not nice
 """),
     "🔍": _,
     "\N{MIRROR BALL}": """
-Your job is to "expand" the meaning of a sentence, usually by replacing either its object or its subject with the word "EVERYQWDIE".
+Your job is to "expand" the meaning of a sentence, usually by replacing either its subject or its object with the word "EVERYQWDIE".
 Assume the replacement sentence is being spoken by a different person than the original sentence, to the person who said the original sentence
 (for example, if person A said the original sentence, person B is saying the replacement sentence to person A).
 You should place the word to fit with the theme of "expanding" the sentence to apply to every person. Do not say anything other than the result of the translation.
