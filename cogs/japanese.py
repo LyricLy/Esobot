@@ -7,12 +7,9 @@ import random
 import io
 
 from discord.ext import commands, menus
-from openai import AsyncOpenAI
 
-from utils import show_error
+from utils import show_error, openai, urls_of_message, message_to_openai
 
-
-openai = AsyncOpenAI()
 
 def format_jp_entry(entry):
     try:
@@ -106,17 +103,6 @@ class Japanese(commands.Cog):
         Responses should be 4 sentences long at most and preferably only one sentence.
     """.split())
 
-    @staticmethod
-    def _urls_of_message(message):
-        attached = [a.url for a in message.attachments if "image" in a.content_type]
-        embedded = [e.url for e in message.embeds if e.type == "image"]
-        return attached + embedded
-
-    @staticmethod
-    def _convert_message(content, urls):
-        images = [{"type": "image_url", "image_url": {"url": url}} for url in urls]
-        return {"role": "user", "content": [{"type": "text", "text": content}, *images]}
-
     @commands.command(aliases=["what", "unlyric", "undweeb", ";)", "otherlanguagesscareme",
                                "機械翻訳", "ifyouhaveajapaneseimewhyareyouusingashittygpt4command"])
     async def unweeb(self, ctx, *, lyric_quote: commands.clean_content = ""):
@@ -127,15 +113,15 @@ class Japanese(commands.Cog):
         if r := ctx.message.reference:
             if not isinstance(r.resolved, discord.Message):
                 return await ctx.send("Reply unavailable :(")
-            messages.append(self._convert_message(r.resolved.content, self._urls_of_message(r.resolved)))
+            messages.append(message_to_openai(r.resolved.content, urls_of_message(r.resolved)))
 
-        urls = self._urls_of_message(ctx.message)
+        urls = urls_of_message(ctx.message)
         if lyric_quote or urls:
-            messages.append(self._convert_message(lyric_quote, urls))
+            messages.append(message_to_openai(lyric_quote, urls))
 
         if not messages:
             prompt = self.GENERAL_PROMPT
-            messages = [self._convert_message(m.content, self._urls_of_message(m)) async for m in ctx.history(limit=12)][:0:-1]
+            messages = [message_to_openai(m.content, urls_of_message(m)) async for m in ctx.history(limit=12)][:0:-1]
 
         completion = await openai.chat.completions.create(
             model="gpt-4o",

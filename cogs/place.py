@@ -3,10 +3,9 @@ import datetime
 import re
 
 from discord.ext import commands
-from openai import AsyncOpenAI, BadRequestError
 
+from utils import openai
 
-openai = AsyncOpenAI()
 
 SYSTEM_MESSAGE = """You are a chatbot named Esobot designed to converse naturally with multiple people at once.
 

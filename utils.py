@@ -9,11 +9,13 @@ import traceback
 import discord
 from unidecode import unidecode
 from discord.ext import commands
+from openai import AsyncOpenAI
 
 from constants import colors, emoji
 
 
 l = logging.getLogger("bot")
+openai = AsyncOpenAI()
 
 
 def clean(text):
@@ -98,6 +100,15 @@ class Prompt(discord.ui.View):
 
 def aggressive_normalize(s):
     return "".join([x for x in unidecode(s.casefold()) if x in string.ascii_letters + string.digits])
+
+def urls_of_message(message):
+    attached = [a.url for a in message.attachments if "image" in a.content_type]
+    embedded = [e.url for e in message.embeds if e.type == "image"]
+    return attached + embedded
+
+def message_to_openai(content, urls):
+    images = [{"type": "image_url", "image_url": {"url": url}} for url in urls]
+    return {"role": "user", "content": [{"type": "text", "text": content}, *images]}
 
 
 class Pronouns:
