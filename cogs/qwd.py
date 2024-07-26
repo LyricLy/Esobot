@@ -371,14 +371,20 @@ nice -> EVERYQWDIE is nice
 """,
     "🆔": """
 Your job is to "reify" the meaning of a sentence by changing its tense to indicate that something hypothesized or wished for is already the case.
+If the input sentence does not indicate anything irreal, respond "DOMAIN ERROR".
 Do not say anything other than the result of the translation.
 
 Here are some examples:
 I wish I could be prettier -> you already are pretty
 if I was the cutest person in the world -> you are the cutest person in the world
 I feel beautiful right now -> you are beautiful right now
-can someone pride me? -> you already are prideful
+can someone make me hot? -> you are hot
 if only I was gay -> you are gay
+I will never be a woman -> you are a woman
+I love to spoon people -> DOMAIN ERROR
+I am poor -> DOMAIN ERROR
+I fucked up -> DOMAIN ERROR
+I am going to be homeless tomorrow -> you are homeless
 """,
 }
 
