@@ -58,3 +58,7 @@ CREATE TABLE IF NOT EXISTS HwdykGames (
     guessed INTEGER NOT NULL,
     actual INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Limes (
+    filename TEXT NOT NULL
+);

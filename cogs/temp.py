@@ -1,7 +1,3 @@
-import datetime
-import os
-import random
-import uuid
 import re
 import unicodedata
 
@@ -15,42 +11,6 @@ class Temporary(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.last_10 = None
-        self.pride_loop.start()
-
-    def cog_unload(self):
-        self.pride_loop.cancel()
-
-    # 12PM UTC
-    @tasks.loop(
-        time=datetime.time(12),
-    )
-    async def pride_loop(self):
-        PATH = "./assets/limes/"
-        l = sorted(os.listdir(PATH))
-        if "index" in l:
-            with open(PATH + "index") as f:
-                i = int(f.read())
-        else:
-            random.shuffle(l)
-            for i, f in enumerate(l):
-                name = f"{i:0>{len(str(len(l)))}}-{uuid.uuid4()}"
-                os.replace(PATH + f, PATH + name)
-                l[i] = name
-            i = 0
-        next_lime = l[i]
-        i += 1
-        if i >= len(l)-1:
-            os.remove(PATH + "index")
-        else:
-            with open(PATH + "index", "w") as f:
-                f.write(str(i))
-        with open(PATH + next_lime, "rb") as f:
-            d = f.read()
-        await self.bot.get_guild(346530916832903169).edit(icon=d)
-
-    @pride_loop.before_loop
-    async def before_pride_loop(self):
-        await self.bot.wait_until_ready()
 
     @commands.group(hidden=True, invoke_without_command=True)
     async def olivia(self, ctx):

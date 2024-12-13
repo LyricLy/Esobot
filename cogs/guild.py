@@ -1,21 +1,53 @@
 import asyncio
 import time
+import os
+import random
+import datetime
 from typing import Union, Optional
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 
 Targets = commands.Greedy[discord.Member]
 HackTargets = commands.Greedy[Union[discord.Member, int]]
 
-class Moderation(commands.Cog):
-    """Moderation functionality for the server."""
+LIME_PATH = "./assets/limes"
+
+class Guild(commands.Cog):
+    """Management of the server itself."""
 
     def __init__(self, bot):
         self.bot = bot
-        self.mute_role = None
-        self._emoji = {}
+        self.pride_loop.start()
+
+    def cog_unload(self):
+        self.pride_loop.cancel()
+
+    # 12PM UTC
+    @tasks.loop(
+        time=datetime.time(12),
+    )
+    async def pride_loop(self):
+        async with self.bot.db.execute("SELECT filename FROM Limes ORDER BY RANDOM() LIMIT 1") as cur:
+            r = await cur.fetchone()
+        if r:
+            name, = r
+        else:
+            l = os.listdir(LIME_PATH)
+            for file in l:
+                await self.bot.db.execute("INSERT INTO Limes (filename) VALUES (?)", (file,))
+            name = random.choice(l)
+
+        await self.bot.db.execute("DELETE FROM Limes WHERE filename = ?", (name,))
+        await self.bot.db.commit()
+        with open(f"{LIME_PATH}/{name}", "rb") as f:
+            d = f.read()
+        await self.bot.get_guild(346530916832903169).edit(icon=d)
+
+    @pride_loop.before_loop
+    async def before_pride_loop(self):
+        await self.bot.wait_until_ready()
 
     async def confirm(self, ctx, targets, reason, verb, *, forbidden_fail=True):
         ss = [str(x) if isinstance(x, int) else x.mention for x in targets]
@@ -116,4 +148,4 @@ class Moderation(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(Moderation(bot))
+    await bot.add_cog(Guild(bot))
