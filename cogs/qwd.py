@@ -649,8 +649,8 @@ class Qwd(commands.Cog, name="QWD"):
 
     @commands.Cog.listener("on_message")
     async def puzzle_listener(self, message):
-        #if message.guild != self.qwd:
-        #    return
+        if message.guild != self.qwd:
+            return
         START = datetime.datetime(2024, 12, 20, tzinfo=datetime.timezone.utc)
         react, predicate = react_puzzles[(datetime.datetime.now(datetime.timezone.utc) - START).days // 7]
         async with self.bot.db.execute("SELECT 1 FROM ReactPuzzleOptOut WHERE user_id = ?", (message.author.id,)) as resp:
