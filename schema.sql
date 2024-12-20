@@ -63,6 +63,6 @@ CREATE TABLE IF NOT EXISTS Limes (
     filename TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS ReactPuzzleOptOut (
+CREATE TABLE IF NOT EXISTS ReactPuzzleOptIn (
     user_id INTEGER PRIMARY KEY
 );
