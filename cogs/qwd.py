@@ -13,6 +13,7 @@ from discord.ext import commands
 from pint import UnitRegistry, UndefinedUnitError, DimensionalityError, formatting, register_unit_format
 from typing import Optional, Union
 
+from config.react_puzzles import react_puzzles
 from utils import openai, get_pronouns, EmbedPaginator, urls_of_message, message_to_openai
 
 
@@ -619,8 +620,8 @@ class Qwd(commands.Cog, name="QWD"):
             await ctx.send("Successfully set your location.")
         await self.bot.db.commit()
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
+    @commands.Cog.listener("on_message")
+    async def mjau(self, message):
         if message.guild == self.qwd and message.content.startswith("!mja"):
             word1, word2 = message.content.split(" ", 1)
             try:
@@ -633,9 +634,33 @@ class Qwd(commands.Cog, name="QWD"):
             await message.channel.send(s)
 
     @commands.group(invoke_without_command=True)
+    async def puzzle(self, ctx):
+        """Opt out of (or back into) Esobot reacting to your messages for the weekly puzzle."""
+
+    @puzzle.command(aliases=["out", "off", "disable", "opt-out"])
+    async def optout(self, ctx):
+        await self.bot.db.execute("INSERT OR IGNORE INTO ReactPuzzleOptOut (user_id) VALUES (?)", (ctx.author.id,))
+        await ctx.send("Sorry to see you go!")
+
+    @puzzle.command(aliases=["in", "on", "enable", "opt-in"])
+    async def optin(self, ctx):
+        await self.bot.db.execute("DELETE FROM ReactPuzzleOptOut WHERE user_id = ?", (ctx.author.id,))
+        await ctx.send("Welcome back!")
+
+    @commands.Cog.listener("on_message")
+    async def puzzle_listener(self, message):
+        #if message.guild != self.qwd:
+        #    return
+        START = datetime.datetime(2024, 12, 20, tzinfo=datetime.timezone.utc)
+        react, predicate = react_puzzles[(datetime.datetime.now(datetime.timezone.utc) - START).days // 7]
+        async with self.bot.db.execute("SELECT 1 FROM ReactPuzzleOptOut WHERE user_id = ?", (message.author.id,)) as resp:
+            r = await resp.fetchone()
+        if predicate(message) and not r:
+            await message.add_reaction(react)
+
+    @commands.group(invoke_without_command=True)
     async def hwdyk(self, ctx):
         """How well do you know your friends?"""
-        pass
 
     async def pick_random_message(self):
         base = datetime.datetime(year=2023, month=7, day=25)
