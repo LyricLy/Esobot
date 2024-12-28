@@ -38,17 +38,7 @@ class CodeGuessing(commands.Cog, name="Code guessing"):
     @commands.command()
     async def cg(self, ctx):
         """Current information about code guessing."""
-        async with self.bot.session.get("https://cg.esolangs.gay/") as resp:
-            soup = BeautifulSoup(await resp.text(), "lxml")
-        target = datetime.fromisoformat(soup.find_all("time")[-1]["datetime"])
-        when = discord.utils.format_dt(target, "R") if datetime.now(timezone.utc) < target else "**when LyricLy wakes up**"
-        header = soup.find("h1")
-        if not header:
-            await ctx.send(f"The next round will start {when}.")
-        elif "stage 1" in header.string:
-            await ctx.send(f"The uploading stage will end {when}.")
-        else:
-            await ctx.send(f"The round will end {when}.")
+        await ctx.send("Deary me, deary me.")
 
     @commands.dm_only()
     @commands.group(invoke_without_command=True)
