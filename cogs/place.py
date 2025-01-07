@@ -30,6 +30,7 @@ StarGazerSofia is Sofia
 Code Lyo_ko is Lyo
 """
 HOME_ID = 1201189212507095071
+MAX_MESSAGE_LENGTH = 2000
 
 ALWAYS_REMIND = [{"role": "system", "content": SYSTEM_MESSAGE}]
 
@@ -70,7 +71,9 @@ class EsobotPlace(commands.Cog):
             tg.create_task(asyncio.sleep(2))
         t = r.result()
         self.messages.append({"role": "assistant", "content": t})
-        await self.bot.get_channel(HOME_ID).send(t)
+
+        for i in range(l, len(t), MAX_MESSAGE_LENGTH):
+            await self.bot.get_channel(HOME_ID).send(t[i:i+MAX_MESSAGE_LENGTH])
 
     @commands.Cog.listener()
     async def on_message(self, message):
