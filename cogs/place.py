@@ -72,7 +72,7 @@ class EsobotPlace(commands.Cog):
         t = r.result()
         self.messages.append({"role": "assistant", "content": t})
 
-        for i in range(l, len(t), MAX_MESSAGE_LENGTH):
+        for i in range(0, len(t), MAX_MESSAGE_LENGTH):
             await self.bot.get_channel(HOME_ID).send(t[i:i+MAX_MESSAGE_LENGTH])
 
     @commands.Cog.listener()
