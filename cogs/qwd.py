@@ -13,7 +13,6 @@ from discord.ext import commands
 from pint import UnitRegistry, UndefinedUnitError, DimensionalityError, formatting, register_unit_format
 from typing import Optional, Union
 
-from config.react_puzzles import react_puzzles
 from utils import openai, get_pronouns, EmbedPaginator, urls_of_message, message_to_openai
 
 
@@ -632,31 +631,6 @@ class Qwd(commands.Cog, name="QWD"):
             if len(s) >= 2000:
                 return
             await message.channel.send(s)
-
-    @commands.group(invoke_without_command=True)
-    async def puzzle(self, ctx):
-        """Opt out of (or back into) Esobot reacting to your messages for the weekly puzzle."""
-
-    @puzzle.command(aliases=["in", "on", "enable", "opt-in"])
-    async def optin(self, ctx):
-        await self.bot.db.execute("INSERT OR IGNORE INTO ReactPuzzleOptIn (user_id) VALUES (?)", (ctx.author.id,))
-        await ctx.send("Hello!")
-
-    @puzzle.command(aliases=["out", "off", "disable", "opt-out"])
-    async def optout(self, ctx):
-        await self.bot.db.execute("DELETE FROM ReactPuzzleOptIn WHERE user_id = ?", (ctx.author.id,))
-        await ctx.send("Sorry to see you go!")
-
-    @commands.Cog.listener("on_message")
-    async def puzzle_listener(self, message):
-        if message.guild != self.qwd:
-            return
-        START = datetime.datetime(2024, 12, 20, tzinfo=datetime.timezone.utc)
-        react, predicate = react_puzzles[(datetime.datetime.now(datetime.timezone.utc) - START).days // 7]
-        async with self.bot.db.execute("SELECT 1 FROM ReactPuzzleOptIn WHERE user_id = ?", (message.author.id,)) as resp:
-            r = await resp.fetchone()
-        if predicate(message) and r:
-            await message.add_reaction(react)
 
     @commands.group(invoke_without_command=True)
     async def hwdyk(self, ctx):
