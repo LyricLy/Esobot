@@ -1011,7 +1011,7 @@ class Qwd(commands.Cog, name="QWD"):
         else:
             for id, title in puzzles:
                 paginator.add_line(f"- **{title}** ({id})")
-        paginator.embeds[0].set_author(name=f"{who.global_name or who.name}'s Connections's", icon_url=who.display_avatar)
+        paginator.embeds[0].set_author(name=f"{who.global_name or who.name}'s Connectionses", icon_url=who.display_avatar)
         for embed in paginator.embeds:
             await ctx.send(embed=embed)
 
