@@ -126,8 +126,12 @@ class PluralKit(commands.Cog):
             self.bot.loop.create_task(self.autopsy(message))
 
         if name := self.settings_cache[message.author].proc(message):
+            if "louna" in name.lower() and message.author.id == 156021301654454272 and (louna := message.guild.get_member(172039434865213440)):
+                user = louna
+            else:
+                user = message.author
             task = self.bot.loop.create_task(self.too_bad(message))
-            self.expected_proxies[name, message.channel].append((task, message.author))
+            self.expected_proxies[name, message.channel].append((task, user))
         else:
             self.dispatch_message(message)
 
