@@ -50,7 +50,8 @@ class Time(commands.Cog):
             color=colors.EMBED_SUCCESS,
         )
         if user.id == 319753218592866315:
-            embed.add_field(name="Warning", value="This user's schedule is unstable and rather arbitrary. Apply caution before using her current time to extrapolate information.")
+            p = get_pronouns(user)
+            embed.add_field(name="Warning", value=f"This user's schedule is unstable and rather arbitrary. Apply caution before using {p.pos_det} current time to extrapolate information.")
         await ctx.send(embed=embed)
 
     @time.command()
