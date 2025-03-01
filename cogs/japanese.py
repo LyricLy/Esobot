@@ -8,7 +8,7 @@ import io
 
 from discord.ext import commands, menus
 
-from utils import show_error, openai, urls_of_message, message_to_openai
+from utils import show_error, preferred_model, urls_of_message, message_to_openai
 
 
 def format_jp_entry(entry):
@@ -103,8 +103,13 @@ class Japanese(commands.Cog):
         Responses should be 4 sentences long at most and preferably only one sentence.
     """.split())
 
-    @commands.command(aliases=["what", "unlyric", "undweeb", ";)", "otherlanguagesscareme",
-                               "機械翻訳", "ifyouhaveajapaneseimewhyareyouusingashittygpt4command"])
+    @commands.group(
+        invoke_without_command=True,
+        aliases=[
+            "what", "unlyric", "undweeb", ";)", "otherlanguagesscareme",
+            "機械翻訳", "ifyouhaveajapaneseimewhyareyouusingashittygptcommand",
+        ],
+    )
     async def unweeb(self, ctx, *, lyric_quote: commands.clean_content = ""):
         """Translate Japanese."""
         prompt = self.SPECIFIC_PROMPT
@@ -123,8 +128,9 @@ class Japanese(commands.Cog):
             prompt = self.GENERAL_PROMPT
             messages = [message_to_openai(m.content, urls_of_message(m)) async for m in ctx.history(limit=12)][:0:-1]
 
-        completion = await openai.chat.completions.create(
-            model="gpt-4o",
+        lib, model = await preferred_model(ctx)
+        completion = await lib.chat.completions.create(
+            model=model,
             messages=[
                 {"role": "system", "content": prompt},
                 *messages,
@@ -137,6 +143,18 @@ class Japanese(commands.Cog):
             await ctx.reply(file=discord.File(io.StringIO(result), "resp.txt"))
         else:
             await ctx.reply(result)
+
+    @unweeb.command(aliases=["🇨🇳", "深度求索"])
+    async def deepseek(self, ctx):
+        await self.bot.db.execute("INSERT OR REPLACE INTO PreferredModels (user_id, model) VALUES (?, 'deepseek')", (ctx.author.id,))
+        await self.bot.db.commit()
+        await ctx.send("Now sending your data to CHINA!!!")
+
+    @unweeb.command(aliases=["🇺🇸"])
+    async def openai(self, ctx):
+        await self.bot.db.execute("INSERT OR REPLACE INTO PreferredModels (user_id, model) VALUES (?, 'openai')", (ctx.author.id,))
+        await self.bot.db.commit()
+        await ctx.send("Now sending your data to the USA!!!")
 
 
 async def setup(bot):

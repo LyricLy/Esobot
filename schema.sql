@@ -63,13 +63,14 @@ CREATE TABLE IF NOT EXISTS Limes (
     filename TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS ReactPuzzleOptIn (
-    user_id INTEGER PRIMARY KEY
-);
-
 CREATE TABLE IF NOT EXISTS ConnectionsPuzzles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     owner INTEGER NOT NULL,
     categories TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS PreferredModels (
+    user_id INTEGER PRIMARY KEY,
+    model TEXT NOT NULL DEFAULT "openai"
 );

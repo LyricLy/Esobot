@@ -1,5 +1,6 @@
 import asyncio
 import re
+import os
 import json
 import random
 import string
@@ -16,6 +17,17 @@ from constants import colors, emoji
 
 l = logging.getLogger("bot")
 openai = AsyncOpenAI()
+deepseek = AsyncOpenAI(api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com")
+
+async def preferred_model(ctx):
+    await ctx.bot.db.execute("INSERT OR IGNORE INTO PreferredModels (user_id) VALUES (?)", (ctx.author.id,))
+    async with ctx.bot.db.execute("SELECT model FROM PreferredModels WHERE user_id = ?", (ctx.author.id,)) as cur:
+        model, = await cur.fetchone()
+    match model:
+        case "openai":
+            return openai, "gpt-4o"
+        case "deepseek":
+            return deepseek, "deepseek-chat"
 
 
 def clean(text):

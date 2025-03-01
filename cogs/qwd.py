@@ -15,7 +15,7 @@ from discord.ext import commands
 from pint import UnitRegistry, UndefinedUnitError, DimensionalityError, formatting, register_unit_format
 from typing import Optional, Union
 
-from utils import openai, get_pronouns, EmbedPaginator, urls_of_message, message_to_openai
+from utils import preferred_model, get_pronouns, EmbedPaginator, urls_of_message, message_to_openai
 
 
 ureg = UnitRegistry(autoconvert_offset_to_baseunit=True)
@@ -926,8 +926,9 @@ class Qwd(commands.Cog, name="QWD"):
         results = []
         for r in reacts:
             prompt = REACT_PROMPTS[r].strip("\n")
-            completion = await openai.chat.completions.create(
-                model="gpt-4o",
+            lib, model = await preferred_model(ctx)
+            completion = await lib.chat.completions.create(
+                model=model,
                 messages=[
                     {"role": "system", "content": prompt},
                     message_to_openai(msg.content if msg else text, urls_of_message(msg if msg else ctx.message)),
