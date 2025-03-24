@@ -216,14 +216,14 @@ async def new_convert(self, ctx, argument):
     try:
         return await old_convert(self, ctx, argument)
     except commands.MemberNotFound:
-        #if not ctx.guild or ctx.guild.id != 1133026989637382144:
-        #    raise
+        if not ctx.guild or ctx.guild.id != 1133026989637382144:
+            raise
         argument = argument.lower()
         if argument == "me":
             return ctx.author
         if p := discord.utils.get(pronoun_sets.values(), obj=argument):
             async for msg in ctx.history(limit=20):
-                if p in third_person_pronoun_sets(msg.author):
+                if msg.author != ctx.author and p in third_person_pronoun_sets(msg.author):
                     return msg.author
         if (id := NICKNAMES.get(argument)) and (m := ctx.guild.get_member(id)):
             return m
