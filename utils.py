@@ -149,6 +149,9 @@ class Pronouns:
     def they_do_not(self):
         return f'{self.Subj()} {self.plrnt("do", "es")}'
 
+    def __str__(self):
+        return f"{self.subj}/{self.obj if self.obj != self.subj else self.pos_det}"
+
 
 pronoun_sets = {
     "he/him": Pronouns("he", "him", "his", "his", "himself", False),
@@ -225,6 +228,7 @@ async def new_convert(self, ctx, argument):
             async for msg in ctx.history(limit=20):
                 if msg.author != ctx.author and p in third_person_pronoun_sets(msg.author):
                     return msg.author
+            raise commands.BadArgument(f"To which user with pronouns '{p}' are you referring?")
         if (id := NICKNAMES.get(argument)) and (m := ctx.guild.get_member(id)):
             return m
         if m := discord.utils.find(lambda m: argument in (m.name.lower(), m.global_name.lower() if m.global_name else None, m.display_name.lower()), ctx.guild.members):
