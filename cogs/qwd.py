@@ -531,7 +531,7 @@ class Qwd(commands.Cog, name="QWD"):
     @commands.guild_only()
     async def dox(self, ctx, *, target: discord.Member):
         """Reveal someone's address if they have set it through the bot. Must be used in a guild; the answer will be DMed to you."""
-        p = get_pronouns(target)
+        p = ctx.get_pronouns(target)
         async with self.bot.db.execute("SELECT address FROM Addresses WHERE user_id = ?", (target.id,)) as cur:
             r = await cur.fetchone()
         if not r:
@@ -575,7 +575,7 @@ class Qwd(commands.Cog, name="QWD"):
     async def get(self, ctx, lb: Leaderboard, *, member: discord.Member = None):
         """Get a specific person's number on a leaderboard."""
         member = member or ctx.author
-        p = get_pronouns(member)
+        p = ctx.get_pronouns(member)
         async with self.bot.db.execute("SELECT datum, main_unit FROM LeaderboardData WHERE user_id = ? AND leaderboard = ?", (member.id, lb.name)) as cur:
             r = await cur.fetchone()
         if not r:
@@ -696,7 +696,7 @@ class Qwd(commands.Cog, name="QWD"):
         """Display current weather at a location or a user's stored location."""
         target = target or ctx.author
         if isinstance(target, discord.Member):
-            p = get_pronouns(target, you=ctx.author)
+            p = ctx.get_pronouns(target)
             async with self.bot.db.execute("SELECT location FROM WeatherLocations WHERE user_id = ?", (target.id,)) as cur:
                 r = await cur.fetchone()
             if not r:
@@ -1007,7 +1007,7 @@ class Qwd(commands.Cog, name="QWD"):
             puzzles = await cur.fetchall()
         paginator = EmbedPaginator()
         if not puzzles:
-            paginator.add_line(f"{get_pronouns(who, you=ctx.author).they_do_not()} have any!")
+            paginator.add_line(f"{ctx.get_pronouns(who).they_do_not()} have any!")
         else:
             for id, title in puzzles:
                 paginator.add_line(f"- **{title}** ({id})")

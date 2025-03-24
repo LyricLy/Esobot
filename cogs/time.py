@@ -37,7 +37,7 @@ class Time(commands.Cog):
         async with self.bot.db.execute("SELECT timezone FROM Timezones WHERE user_id = ?", (user.id,)) as cur:
             t = await cur.fetchone()
         if not t:
-            p = get_pronouns(user, you=ctx.author)
+            p = ctx.get_pronouns(user)
             message = f'{p.they_do_not()} have a timezone set.'
             return await show_error(ctx, message, "Timezone not set")
         time = Time.get_time(t[0])

@@ -175,6 +175,8 @@ def get_pronouns(member, *, you=None):
             pronouns.append(pronoun_sets["she/her"])
     return random.choice(pronouns)
 
+commands.Context.get_pronouns = lambda self, arg: get_pronouns(arg, you=self.author)
+
 async def show_error(ctx, message, title="Error"):
     await ctx.send(
         embed=discord.Embed(title=title, description=message, color=colors.EMBED_ERROR)
