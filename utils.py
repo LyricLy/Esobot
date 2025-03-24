@@ -158,11 +158,7 @@ pronoun_sets = {
     "fae/faer": Pronouns("fae", "faer", "faer", "faers", "faerself", False),
 }
 
-def get_pronouns(member, *, you=None):
-    if member.id == 435756251205468160:
-        return Pronouns("I", "me", "my", "mine", "myself", True)
-    elif member == you:
-        return Pronouns("you", "you", "your", "yours", "yourself", True)
+def third_person_pronoun_sets(member):
     roles = [role.name for guild in member.mutual_guilds for role in guild.get_member(member.id).roles]
     pronouns = []
     for s, p in pronoun_sets.items():
@@ -173,7 +169,14 @@ def get_pronouns(member, *, you=None):
         if "any pronouns" in roles:
             pronouns.append(pronoun_sets["he/him"])
             pronouns.append(pronoun_sets["she/her"])
-    return random.choice(pronouns)
+    return pronouns
+
+def get_pronouns(member, *, you=None):
+    if member.id == 435756251205468160:
+        return Pronouns("I", "me", "my", "mine", "myself", True)
+    elif member == you:
+        return Pronouns("you", "you", "your", "yours", "yourself", True)
+    return random.choice(third_person_pronoun_sets(member))
 
 commands.Context.get_pronouns = lambda self, arg: get_pronouns(arg, you=self.author)
 
@@ -213,11 +216,15 @@ async def new_convert(self, ctx, argument):
     try:
         return await old_convert(self, ctx, argument)
     except commands.MemberNotFound:
-        if not ctx.guild or ctx.guild.id != 1133026989637382144:
-            raise
+        #if not ctx.guild or ctx.guild.id != 1133026989637382144:
+        #    raise
         argument = argument.lower()
         if argument == "me":
             return ctx.author
+        if p := discord.utils.get(pronoun_sets.values(), obj=argument):
+            async for msg in ctx.history(limit=20):
+                if p in third_person_pronoun_sets(msg.author):
+                    return msg.author
         if (id := NICKNAMES.get(argument)) and (m := ctx.guild.get_member(id)):
             return m
         if m := discord.utils.find(lambda m: argument in (m.name.lower(), m.global_name.lower() if m.global_name else None, m.display_name.lower()), ctx.guild.members):
