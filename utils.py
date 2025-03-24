@@ -158,9 +158,11 @@ pronoun_sets = {
     "fae/faer": Pronouns("fae", "faer", "faer", "faers", "faerself", False),
 }
 
-def get_pronouns(member):
+def get_pronouns(member, *, you=None):
     if member.id == 435756251205468160:
         return Pronouns("I", "me", "my", "mine", "myself", True)
+    elif member == you:
+        return Pronouns("you", "you", "your", "yours", "yourself", True)
     roles = [role.name for guild in member.mutual_guilds for role in guild.get_member(member.id).roles]
     pronouns = []
     for s, p in pronoun_sets.items():
@@ -212,6 +214,8 @@ async def new_convert(self, ctx, argument):
         if not ctx.guild or ctx.guild.id != 1133026989637382144:
             raise
         argument = argument.lower()
+        if argument == "me":
+            return ctx.author
         if (id := NICKNAMES.get(argument)) and (m := ctx.guild.get_member(id)):
             return m
         if m := discord.utils.find(lambda m: argument in (m.name.lower(), m.global_name.lower() if m.global_name else None, m.display_name.lower()), ctx.guild.members):

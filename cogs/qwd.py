@@ -696,11 +696,11 @@ class Qwd(commands.Cog, name="QWD"):
         """Display current weather at a location or a user's stored location."""
         target = target or ctx.author
         if isinstance(target, discord.Member):
-            p = get_pronouns(target)
+            p = get_pronouns(target, you=ctx.author)
             async with self.bot.db.execute("SELECT location FROM WeatherLocations WHERE user_id = ?", (target.id,)) as cur:
                 r = await cur.fetchone()
             if not r:
-                return await ctx.send(f"{p.they_do_not()} have a location set." if target != ctx.author else "You don't have a location set.")
+                return await ctx.send(f"{p.they_do_not()} have a location set.")
             location, = r
         else:
             location = target
@@ -1007,8 +1007,7 @@ class Qwd(commands.Cog, name="QWD"):
             puzzles = await cur.fetchall()
         paginator = EmbedPaginator()
         if not puzzles:
-            they_do_not = get_pronouns(who).they_do_not() if ctx.author != who else "You don't"
-            paginator.add_line(f"{they_do_not} have any!")
+            paginator.add_line(f"{get_pronouns(who, you=ctx.author).they_do_not()} have any!")
         else:
             for id, title in puzzles:
                 paginator.add_line(f"- **{title}** ({id})")
