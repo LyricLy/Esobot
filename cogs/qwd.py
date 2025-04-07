@@ -758,6 +758,30 @@ class Qwd(commands.Cog, name="QWD"):
                 return
             await message.channel.send(s)
 
+
+    @commands.Cog.listener("on_message")
+    async def cc_watchfox(self, message):
+        if message.guild != self.qwd:
+            return
+        if not any(attachment.content_type.startswith(("audio", "video")) for attachment in message.attachments):
+            await asyncio.sleep(1)
+            try:
+                now = await message.channel.fetch_message(message.id)
+            except discord.NotFound:
+                return
+            if not any(embed.type == "video" for embed in message.embeds):
+                return
+        await message.add_reaction("<:missing_captions:1358721100695076944>")
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        if payload.emoji.id != 1358721100695076944 or payload.guild_id != self.qwd.id or payload.member == self.bot.user:
+            return
+        part_msg = self.bot.get_partial_messageable(payload.channel_id).get_partial_message(payload.message_id)
+        await part_msg.remove_reaction(payload.emoji, self.bot.user)
+        await part_msg.remove_reaction(payload.emoji, payload.member)
+
+
     @commands.group(invoke_without_command=True)
     async def hwdyk(self, ctx):
         """How well do you know your friends?"""
