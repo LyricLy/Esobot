@@ -984,8 +984,8 @@ class Qwd(commands.Cog, name="QWD"):
         await ctx.send(embed=view.render(), view=view)
 
     @commands.dm_only()
-    @connections.command(aliases=["add", "new", "make"])
-    async def create(self, ctx, title, *, categories):
+    @connections.command(name="create", aliases=["add", "new", "make"])
+    async def connections_create(self, ctx, title, *, categories):
         """Make a new Connections puzzle."""
         DELIMITERS = ["\n", "|", ";", ",", " "]
 
