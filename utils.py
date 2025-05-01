@@ -212,6 +212,7 @@ NICKNAMES = {
     "wren": 160206124635783168,
     "sa": 358359026083430410,
     "lights": 95171735548067840,
+    "enna": 323622666412228608,
 }
 
 old_convert = commands.MemberConverter.convert
