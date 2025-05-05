@@ -9,6 +9,7 @@ import logging
 import sys
 import traceback
 import os
+import objgraph
 
 from cogs import get_extensions
 from constants import colors, info
@@ -71,6 +72,7 @@ bot.loaded_extensions = set()
 async def on_ready():
     bot.owner_id = (await bot.application_info()).owner.id
     l.info(f"Ready")
+    objgraph.show_growth()
     await wait_until_loaded()
     await bot.change_presence(status=discord.Status.online)
 
@@ -177,4 +179,5 @@ async def wait_until_loaded():
 
 
 if __name__ == "__main__":
+    objgraph.show_growth(limit=3)
     bot.run(TOKEN)

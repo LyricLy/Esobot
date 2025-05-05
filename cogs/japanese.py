@@ -1,6 +1,5 @@
 import aiohttp
 import asyncio
-import pykakasi
 import discord
 import asyncio
 import random
@@ -55,17 +54,6 @@ class Japanese(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        kakasi = pykakasi.kakasi()
-        kakasi.setMode("H", "a")
-        kakasi.setMode("K", "a")
-        kakasi.setMode("J", "a")
-        kakasi.setMode("s", True)
-        self.conv = kakasi.getConverter()
-
-    @commands.command(aliases=["ro", "roman", "romanize", "romanise"])
-    async def romaji(self, ctx, *, text: commands.clean_content = None):
-        """Romanize Japanese text."""
-        await ctx.send(self.conv.do(text or self.last_lyric_msg))
 
     @commands.command(aliases=["jp", "jsh", "dictionary", "dict"])
     async def jisho(self, ctx, *, query):
