@@ -227,7 +227,7 @@ async def new_convert(self, ctx, argument):
             return ctx.author
         if p := discord.utils.get(pronoun_sets.values(), obj=argument):
             async for msg in ctx.history(limit=20):
-                if msg.author != ctx.author and p in third_person_pronoun_sets(msg.author):
+                if msg.author not in (ctx.author, ctx.me) and p in third_person_pronoun_sets(msg.author):
                     return msg.author
             raise commands.BadArgument(f"To which user with pronouns '{p}' are you referring?")
         if (id := NICKNAMES.get(argument)) and (m := ctx.guild.get_member(id)):
