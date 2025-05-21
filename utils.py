@@ -190,6 +190,7 @@ async def show_error(ctx, message, title="Error"):
 
 NICKNAMES = {
     "pyro": 261243340752814085,
+    "clover": 261243340752814085,
     "emma": 354579932837445635,
     "emily": 269509329298653186,
     "gnu": 578808799842926592,
