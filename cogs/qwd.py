@@ -922,7 +922,9 @@ class Qwd(commands.Cog, name="QWD"):
             if not total_total:
                 embed.set_footer(text=f"No message by {member.display_name} has appeared yet")
             else:
-                embed.set_footer(text=f"Messages by {member.display_name} have appeared {total_total} times and been guessed correctly {correct_total} times ({correct_total/total_total*100:.2f}%)")
+                times = lambda x: f"{x} times" if x != 1 else "1 time"
+                messages = "Messages" if total_total != 1 else "A message"
+                embed.set_footer(text=f"{messages} by {member.display_name} have appeared {times(total_total)} and been guessed correctly {times(correct_total)} ({correct_total/total_total*100:.2f}%)")
 
         await ctx.send(embed=embed)
 
