@@ -18,16 +18,13 @@ GNURadioShows is Christine
 ultlang is Emma
 SwedishSubmarine is Emily
 pmzie is Ari
-pyrotelekinetic is Pyro
-rottenessie is Essie
+pyrotelekinetic is Clover
+cotesiaflowers is Abby
 essaie is sa
 ryfox is Ry
 olus2000 is Olus
-Foxhead is Liz
 IFcoltransG is Coltrans
-BeatButton is Beat
 StarGazerSofia is Sofia
-Code Lyo_ko is Lyo
 """
 HOME_ID = 1201189212507095071
 MAX_MESSAGE_LENGTH = 2000
