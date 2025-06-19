@@ -19,7 +19,7 @@ ultlang is Emma
 SwedishSubmarine is Emily
 pmzie is Ari
 pyrotelekinetic is Clover
-cotesiaflowers is Abby
+CotesiaFlowers is Abby
 essaie is sa
 ryfox is Ry
 olus2000 is Olus
