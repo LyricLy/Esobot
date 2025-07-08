@@ -74,3 +74,9 @@ CREATE TABLE IF NOT EXISTS PreferredModels (
     user_id INTEGER PRIMARY KEY,
     model TEXT NOT NULL DEFAULT "openai"
 );
+
+CREATE TABLE IF NOT EXISTS CCReacts (
+    message_id INTEGER PRIMARY KEY,
+    cleared_by INTEGER,
+    cleared_at TIMESTAMP
+);

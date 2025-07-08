@@ -1,7 +1,6 @@
 import asyncio
 import aiohttp
 import discord
-import time
 
 from collections import defaultdict, deque
 from dataclasses import dataclass, field

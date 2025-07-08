@@ -3,7 +3,6 @@ import datetime
 import discord
 import json
 import pytz
-import time
 import traceback
 import itertools
 

@@ -4,17 +4,18 @@ import asyncio
 import aiohttp
 import aiosqlite
 import discord
+import datetime
 import functools
 import logging
 import sys
 import traceback
 import os
-import objgraph
 
 from cogs import get_extensions
 from constants import colors, info
 from discord.ext import commands
 from utils import l, show_error
+from sqlite3 import PARSE_DECLTYPES
 
 LOG_LEVEL_API = logging.WARNING
 LOG_LEVEL_BOT = logging.INFO
@@ -72,7 +73,6 @@ bot.loaded_extensions = set()
 async def on_ready():
     bot.owner_id = (await bot.application_info()).owner.id
     l.info(f"Ready")
-    objgraph.show_growth()
     await wait_until_loaded()
     await bot.change_presence(status=discord.Status.online)
 
@@ -151,10 +151,13 @@ async def load_extensions():
         bot.loaded_extensions.add(extension)
     l.info("Loaded all extensions")
 
+aiosqlite.register_converter("timestamp", lambda x: datetime.datetime.fromisoformat(x.decode()))
+aiosqlite.register_adapter(datetime.datetime, lambda x: x.isoformat())
+
 async def setup():
     bot.loop.create_task(load_extensions())
     bot.session = aiohttp.ClientSession(loop=bot.loop, headers={"User-Agent": info.NAME})
-    db = await aiosqlite.connect("config/the.db")
+    db = await aiosqlite.connect("config/the.db", detect_types=PARSE_DECLTYPES)
     db.row_factory = aiosqlite.Row
     await db.execute("PRAGMA foreign_keys = ON")
 
@@ -179,5 +182,4 @@ async def wait_until_loaded():
 
 
 if __name__ == "__main__":
-    objgraph.show_growth(limit=3)
     bot.run(TOKEN)
