@@ -520,11 +520,12 @@ class Qwd(commands.Cog, name="QWD"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.qwd = None
+
+    async def cog_load(self):
+        await self.bot.wait_until_ready()
+        self.qwd = self.bot.get_guild(1133026989637382144)
 
     def cog_check(self, ctx):
-        if not self.qwd:
-            self.qwd = self.bot.get_guild(1133026989637382144)
         return not ctx.guild and self.qwd.get_member(ctx.author.id) or ctx.guild == self.qwd
 
     @commands.group(invoke_without_command=True, aliases=["doxx"])
@@ -769,7 +770,7 @@ class Qwd(commands.Cog, name="QWD"):
                 now = await message.channel.fetch_message(message.id)
             except discord.NotFound:
                 return
-            if not any(embed.type == "video" for embed in message.embeds):
+            if not any(embed.video for embed in message.embeds):
                 return
         await message.add_reaction("<:missing_captions:1358721100695076944>")
 
