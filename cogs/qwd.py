@@ -798,13 +798,14 @@ class Qwd(commands.Cog, name="QWD"):
         async with self.bot.db.execute("SELECT cleared_by, cleared_at FROM CCReacts WHERE message_id = ?", (message.id,)) as cur:
             row = await cur.fetchone()
         if row is None:
-            await ctx.send("I never reacted with <:missing_captions:1358721100695076944> to that message.")
-        else:
-            cleared_by, cleared_at = row
-            await ctx.send(
-                f"I reacted with <:missing_captions:1358721100695076944> to that message, and <@{cleared_by}> cleared it at {discord.utils.format_dt(cleared_at)}.",
-                allowed_mentions=discord.AllowedMentions.none(),
-            )
+            return await ctx.send("I never reacted with <:missing_captions:1358721100695076944> to that message.")
+        cleared_by, cleared_at = row
+        if not cleared_by:
+            return await ctx.send("My reaction is still there, silly!")
+        await ctx.send(
+            f"I reacted with <:missing_captions:1358721100695076944> to that message, and <@{cleared_by}> cleared it at {discord.utils.format_dt(cleared_at)}.",
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
 
     @commands.group(invoke_without_command=True)
     async def hwdyk(self, ctx):
