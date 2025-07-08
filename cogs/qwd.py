@@ -784,7 +784,7 @@ class Qwd(commands.Cog, name="QWD"):
         await part_msg.remove_reaction(payload.emoji, self.bot.user)
         await part_msg.remove_reaction(payload.emoji, payload.member)
         await self.bot.db.execute(
-            "UPDATE CCReacts SET cleared_by = COALESCE(cleared_by, ?), cleared_at = COALESCE(cleared_atm, ?) WHERE message_id = ?",
+            "UPDATE CCReacts SET cleared_by = COALESCE(cleared_by, ?), cleared_at = COALESCE(cleared_at, ?) WHERE message_id = ?",
             (payload.member.id, datetime.datetime.now(datetime.timezone.utc), part_msg.id),
         )
         await self.bot.db.commit()
