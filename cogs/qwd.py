@@ -770,7 +770,7 @@ class Qwd(commands.Cog, name="QWD"):
                 now = await message.channel.fetch_message(message.id)
             except discord.NotFound:
                 return
-            if not any(hasattr(embed.video, "url") for embed in message.embeds):
+            if not any(embed.video.url for embed in message.embeds):
                 return
         await self.bot.db.execute("INSERT INTO CCReacts (message_id) VALUES (?)", (message.id,))
         await self.bot.db.commit()
