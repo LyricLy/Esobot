@@ -67,26 +67,6 @@ class General(commands.Cog):
         )
 
     @commands.command()
-    @commands.guild_only()
-    async def quote(self, ctx, message: discord.Message):
-        """Quote a previous message."""
-        embed = discord.Embed(
-            description=message.content,
-            timestamp=message.created_at,
-        )
-        embed.set_footer(text="#" + message.channel.name)
-        embed.set_author(name=message.author.name, icon_url=message.author.display_avatar)
-        if message.attachments:
-            filename = message.attachments[0].filename
-            if (
-                filename.endswith(".png")
-                or filename.endswith(".jpg")
-                or filename.endswith(".jpeg")
-            ):
-                embed.set_image(url=message.attachments[0].url)
-        await ctx.send(embed=embed)
-
-    @commands.command()
     async def identicon(self, ctx, username: str, color: Optional[discord.Colour] = discord.Colour(0xF0F0F0), alpha: float = 0.0):
         """Send someone's GitHub identicon. `color` and `alpha` control the background colour.
 

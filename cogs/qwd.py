@@ -783,17 +783,26 @@ class Qwd(commands.Cog, name="QWD"):
         part_msg = self.bot.get_partial_messageable(payload.channel_id).get_partial_message(payload.message_id)
         await part_msg.remove_reaction(payload.emoji, self.bot.user)
         await part_msg.remove_reaction(payload.emoji, payload.member)
-        async with self.bot.db.execute("SELECT cleared_by, cleared_at FROM CCReacts WHERE message_id = ?", (part_msg.id,)) as cur:
+        await self.bot.db.execute(
+            "UPDATE CCReacts SET cleared_by = COALESCE(cleared_by, ?), cleared_at = COALESCE(cleared_atm, ?) WHERE message_id = ?",
+            (payload.member.id, datetime.datetime.now(datetime.timezone.utc), part_msg.id),
+        )
+        await self.bot.db.commit()
+
+    @commands.command()
+    async def watchfox(self, ctx, *, message: discord.Message = None):
+        """Ask Cici about a particular message."""
+        message = message or (r := ctx.message.reference) and r.resolved
+        if not message:
+            return await ctx.send("Please reply to a message or provide a message ID.")
+        async with self.bot.db.execute("SELECT cleared_by, cleared_at FROM CCReacts WHERE message_id = ?", (message.id,)) as cur:
             row = await cur.fetchone()
         if row is None:
-            return await part_msg.reply("I never reacted with <:missing_captions:1358721100695076944> to this message.")
-        cleared_by, cleared_at = row
-        if not cleared_by:
-            await self.bot.db.execute("UPDATE CCReacts SET cleared_by = ?, cleared_at = ? WHERE message_id = ?", (payload.member.id, datetime.datetime.now(datetime.timezone.utc), part_msg.id))
-            await self.bot.db.commit()
+            await ctx.send("I never reacted with <:missing_captions:1358721100695076944> to that message.")
         else:
-            await part_msg.reply(
-                f"I reacted with <:missing_captions:1358721100695076944> to this message, and <@{cleared_by}> cleared it at {discord.utils.format_dt(cleared_at)}.",
+            cleared_by, cleared_at = row
+            await ctx.send(
+                f"I reacted with <:missing_captions:1358721100695076944> to that message, and <@{cleared_by}> cleared it at {discord.utils.format_dt(cleared_at)}.",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
 
