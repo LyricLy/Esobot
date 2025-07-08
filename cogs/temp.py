@@ -1,4 +1,5 @@
 import re
+import random
 import unicodedata
 
 import discord
@@ -20,6 +21,24 @@ class Temporary(commands.Cog):
     async def _time(self, ctx):
         if member := ctx.guild.get_member(156021301654454272):
             await self.bot.get_command("time")(ctx, user=member)
+
+    @commands.group(hidden=True, invoke_without_command=True)
+    async def watch(self, ctx):
+        pass
+
+    @watch.command(name="fox", hidden=True)
+    async def fox(self, ctx, fox: discord.Member = None):
+        foxes = {
+            402456897812168705: "xenia",
+            361263860730036225: "Ry",
+            696824456697479240: "ivy",
+        }
+        try:
+            fox_name = foxes[fox.id] if fox else random.choice(list(foxes.values()))
+        except KeyError:
+            await ctx.send("Hey, that's not a fox!")
+        else:
+            await ctx.send(f"Watching {fox_name}...")
 
     @commands.Cog.listener()
     async def on_message(self, message):
