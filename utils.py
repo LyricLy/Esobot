@@ -113,6 +113,15 @@ class Prompt(discord.ui.View):
 def aggressive_normalize(s):
     return "".join([x for x in unidecode(s.casefold()) if x in string.ascii_letters + string.digits])
 
+def rank_enumerate(xs, *, key, reverse=True):
+    cur_idx = None
+    cur_key = None
+    for idx, x in enumerate(sorted(xs, key=key, reverse=reverse), start=1):
+        if cur_key is None or key(x) != cur_key:
+            cur_idx = idx
+            cur_key = key(x)
+        yield (cur_idx, x)
+
 def urls_of_message(message):
     attached = [a.url for a in message.attachments if "image" in a.content_type]
     embedded = [e.url for e in message.embeds if e.type == "image"]

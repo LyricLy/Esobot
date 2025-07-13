@@ -4,8 +4,10 @@ from os import path
 
 def get_extensions():
     extensions_list = []
-    for filepath in iglob(path.join(path.dirname(__file__), "*.py")):
-        filename = path.basename(filepath)
-        if not filename.startswith("_"):
-            extensions_list.append(filename[:-3])
+    d = path.dirname(__file__)
+    for filepath in iglob(path.join(d, "**/*.py"), recursive=True):
+        if path.basename(filepath).startswith("_"):
+            continue
+        filename = path.relpath(filepath, d)
+        extensions_list.append(filename.removesuffix(".py").replace("/", "."))
     return extensions_list
