@@ -117,7 +117,7 @@ I am going to be homeless tomorrow -> you are homeless
 }
 
 
-class QwdInterp(QwdBase, name="QWD/Interpretation"):
+class QwdInterp(QwdBase, name="Interpretation (QWD)"):
     """Interpreting content for the benefit of all QWD!"""
 
     def __init__(self, bot):

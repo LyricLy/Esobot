@@ -225,7 +225,7 @@ def render_graph(member_values):
     return rendered
 
 
-class QwdInfo(QwdBase, name="QWD/User info"):
+class QwdInfo(QwdBase, name="User info (QWD)"):
     """QWD commands dealing with user-provided information."""
 
     def __init__(self, bot):

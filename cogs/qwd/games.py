@@ -183,7 +183,7 @@ class Connections(discord.ui.View):
         await self.redraw(interaction)
 
 
-class QwdGames(QwdBase, name="QWD/Games"):
+class QwdGames(QwdBase, name="Games (QWD)"):
     """Games for QWD."""
 
     def __init__(self, bot):
