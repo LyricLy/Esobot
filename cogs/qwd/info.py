@@ -242,7 +242,7 @@ class QwdInfo(QwdBase, name="User info (QWD)"):
     def cog_unload(self):
         self.sync_times.cancel()
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=15)
     async def sync_times(self):
         async with self.bot.db.execute("SELECT * FROM Timezones") as cur:
             rows = await cur.fetchall()
