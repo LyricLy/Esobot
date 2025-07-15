@@ -60,6 +60,7 @@ intents = discord.Intents(
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(COMMAND_PREFIX),
     case_insensitive=True,
+    max_messages=50,
     status=discord.Status.dnd,
     allowed_mentions=discord.AllowedMentions(everyone=False, replied_user=False),
     intents=intents

@@ -5,11 +5,11 @@ from tokenize import TokenError
 
 import discord
 from PIL import Image
-from discord.ext import commands
+from discord.ext import commands, tasks
 from pint import UnitRegistry, UndefinedUnitError, DimensionalityError, formatting, register_unit_format
 from typing import Union
 
-from . import QwdBase
+from . import QwdBase, chitterclass, myself
 from utils import EmbedPaginator, rank_enumerate
 
 
@@ -225,11 +225,40 @@ def render_graph(member_values):
     return rendered
 
 
+@chitterclass(1394562583348121620, listen_to=myself)
+class QwdieTimezone:
+    member: discord.Member
+    timezone: str
+
+
 class QwdInfo(QwdBase, name="User info (QWD)"):
     """QWD commands dealing with user-provided information."""
 
-    def __init__(self, bot):
-        self.bot = bot
+    async def cog_load(self):
+        await super().cog_load()
+        await QwdieTimezone.sync(self.bot)
+        self.sync_times.start()
+
+    def cog_unload(self):
+        self.sync_times.cancel()
+
+    @tasks.loop(minutes=5)
+    async def sync_times(self):
+        async with self.bot.db.execute("SELECT * FROM Timezones") as cur:
+            rows = await cur.fetchall()
+
+        ours = {m: tz for user, tz in rows if (m := QwdBase.qwd.get_member(user))}
+
+        for row in list(QwdieTimezone.rows()):
+            if not isinstance(row.member, discord.Member) or not (our := ours.get(row.member)):
+                await row.delete()
+                continue
+            if row.timezone != our:
+                await row.update(timezone=our)
+            ours.pop(row.member)
+
+        for user, tz in ours.items():
+            await QwdieTimezone.insert(user, tz)
 
     @commands.group(invoke_without_command=True, aliases=["doxx"])
     @commands.guild_only()

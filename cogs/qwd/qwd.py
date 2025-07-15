@@ -6,9 +6,6 @@ from . import QwdBase
 class Qwd(QwdBase, name="QWD"):
     """General QWD-specific functionality."""
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.Cog.listener("on_message")
     async def mjau(self, message):
         if message.guild == self.qwd and message.content.startswith("!mja"):

@@ -68,7 +68,7 @@ class Guild(commands.Cog):
         msg = await ctx.send(embed=embed)
         await msg.add_reaction("✅")
         await msg.add_reaction("❌")
-        r, _ = await self.bot.wait_for("reaction_add", check=lambda r, u: str(r.emoji) in ("✅", "❌") and r.message.id == msg.id and u == ctx.author)
+        r, _ = await self.bot.wait_for("raw_reaction_add", check=lambda payload: str(payload.emoji) in ("✅", "❌") and payload.message_id == msg.id and payload.member == ctx.author)
 
         await msg.delete()
         if str(r.emoji) == "✅":

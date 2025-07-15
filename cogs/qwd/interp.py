@@ -120,9 +120,6 @@ I am going to be homeless tomorrow -> you are homeless
 class QwdInterp(QwdBase, name="Interpretation (QWD)"):
     """Interpreting content for the benefit of all QWD!"""
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.Cog.listener("on_message")
     async def cc_watchfox(self, message):
         if message.guild != self.qwd:

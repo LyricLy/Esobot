@@ -186,9 +186,6 @@ class Connections(discord.ui.View):
 class QwdGames(QwdBase, name="Games (QWD)"):
     """Games for QWD."""
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.group(invoke_without_command=True)
     async def hwdyk(self, ctx):
         """How well do you know your friends?"""
