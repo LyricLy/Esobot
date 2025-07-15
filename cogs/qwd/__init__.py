@@ -85,7 +85,7 @@ def ser(l):
     out = []
     for val in l:
         if isinstance(val, str):
-            out.append(val.replace("\\", r"\\").replace('"', r"\""))
+            out.append(f'"{val.replace("\\", r"\\").replace('"', r"\"")}"')
         elif isinstance(val, (int, float, discord.Emoji, discord.PartialEmoji)):
             out.append(str(val))
         elif isinstance(val, (discord.abc.GuildChannel, discord.abc.User, discord.Role)):
