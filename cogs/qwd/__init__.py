@@ -120,7 +120,7 @@ def myself(bot, user):
     return user == bot.user
 
 def only(*people):
-    return lambda bot, user: user in people
+    return lambda bot, user: user.id in people
 
 def bots(bot, user):
     return user.bot
