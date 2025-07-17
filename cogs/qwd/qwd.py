@@ -148,35 +148,35 @@ class Qwd(QwdBase, name="QWD"):
         if ctx.guild != self.qwd:
             return await self.old_convert(converter, ctx, argument)
 
-        choices = []
+        choices = set()
 
         thought = argument.removeprefix("<@").removeprefix("!").removesuffix(">")
         if thought.isdigit() and (user := self.qwd.get_member(int(thought))):
-            choices.append(user)
+            choices.add(user)
 
         # ignore any attempt at a discrim
         arg = argument.casefold().split("#", 1)[0]
 
-        choices.extend([
+        choices.update([
        # band for band
             m for m in self.qwd.members if arg in (m.name.casefold(), m.global_name and m.global_name.casefold(), m.display_name.casefold())
         ])
 
-        choices.extend(Aliases.table[arg])
+        choices.update(Aliases.table[arg])
 
         if arg.rstrip("e") == "m" and len(arg) >= 2:
-            choices.append(ctx.author)
+            choices.add(ctx.author)
         elif arg.rstrip("u") == "yo" and len(arg) >= 3:
-            choices.append(ctx.me)
+            choices.add(ctx.me)
         elif p := discord.utils.get(pronoun_sets.values(), obj=arg):
             async for msg in ctx.history(limit=15):
                 if msg.author not in (ctx.author, ctx.me) and p in third_person_pronoun_sets(msg.author):
-                    choices.append(msg.author)
+                    choices.add(msg.author)
 
         if not choices:
             raise commands.MemberNotFound(argument)
         if len(choices) == 1:
-            return choices[0]
+            return choices.pop()
 
         # can we find a choice in memory that beats all the others?
         for choice in choices:
