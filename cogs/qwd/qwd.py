@@ -125,9 +125,6 @@ class Aliases:
 
     table = defaultdict(list)
 
-    def __init__(self, *args, **kwargs):
-        super(Aliases, self).__init__(*args, **kwargs)
-
     def on_seen(self):
         self.table[self.alias.casefold()].append(self.user)
 
