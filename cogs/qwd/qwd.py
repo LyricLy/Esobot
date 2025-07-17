@@ -4,13 +4,10 @@ from collections import defaultdict
 
 import discord
 from discord.ext import commands
-from wand.image import Image
 
 from . import QwdBase, chitterclass, only
 from utils import l, aggressive_normalize, pronoun_sets, third_person_pronoun_sets
 
-
-mask = Image(filename="assets/circle.png")
 
 async def circularize(img_data):
     proc = await asyncio.create_subprocess_shell(
