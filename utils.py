@@ -169,54 +169,5 @@ async def show_error(ctx, message, title="Error"):
         embed=discord.Embed(title=title, description=message, color=colors.EMBED_ERROR)
     )
 
-NICKNAMES = {
-    "pyro": 261243340752814085,
-    "clover": 261243340752814085,
-    "emma": 354579932837445635,
-    "emily": 269509329298653186,
-    "gnu": 578808799842926592,
-    "olus": 339009650592710656,
-    "hb": 331320482047721472,
-    "lyric": 319753218592866315,
-    "ari": 196391696907501570,
-    "liz": 320947758959820801,
-    "coltrans": 241757436720054273,
-    "sofia": 275982450432147456,
-    "beat": 621813788609347628,
-    "abby": 1272986424857202856,
-    "ry": 361263860730036225,
-    "makefile": 390874788006199296,
-    "edgex": 257604541300604928,
-    "you": 435756251205468160,
-    "peach": 666489957992497182,
-    "mat": 199151261604380672,
-    "iso": 559418497734803470,
-    "wren": 160206124635783168,
-    "sa": 358359026083430410,
-    "lights": 95171735548067840,
-    "enna": 323622666412228608,
-    "tassie": 322724805201756181,
-    "rebecca": 293066066605768714,
-}
-
-old_convert = commands.MemberConverter.convert
-async def new_convert(self, ctx, argument):
-    try:
-        return await old_convert(self, ctx, argument)
-    except commands.MemberNotFound:
-        if not ctx.guild or ctx.guild.id != 1133026989637382144:
-            raise
-        argument = argument.lower()
-        if argument == "me":
-            return ctx.author
-        if p := discord.utils.get(pronoun_sets.values(), obj=argument):
-            async for msg in ctx.history(limit=20):
-                if msg.author not in (ctx.author, ctx.me) and p in third_person_pronoun_sets(msg.author):
-                    return msg.author
-            raise commands.BadArgument(f"To which user with pronouns '{p}' are you referring?")
-        if (id := NICKNAMES.get(argument)) and (m := ctx.guild.get_member(id)):
-            return m
-        if m := discord.utils.find(lambda m: argument in (m.name.lower(), m.global_name.lower() if m.global_name else None, m.display_name.lower()), ctx.guild.members):
-            return m
-        raise
-commands.MemberConverter.convert = new_convert
+class HandledConversionFailure(commands.UserInputError):
+    pass

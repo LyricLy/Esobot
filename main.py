@@ -14,7 +14,7 @@ import os
 from cogs import get_extensions
 from constants import colors, info
 from discord.ext import commands
-from utils import l, show_error
+from utils import l, show_error, HandledConversionFailure
 from sqlite3 import PARSE_DECLTYPES
 
 LOG_LEVEL_API = logging.WARNING
@@ -103,7 +103,7 @@ async def on_command_error(ctx, exc):
         else:
             description = f"Unknown user input exception."
         description += f"\n\nRun `{COMMAND_PREFIX}help {command_name}` to view the required arguments."
-    elif isinstance(exc, commands.CommandNotFound):
+    elif isinstance(exc, (commands.CommandNotFound, HandledConversionFailure)):
         return
     elif isinstance(exc, commands.CheckFailure):
         if isinstance(exc, commands.NoPrivateMessage):

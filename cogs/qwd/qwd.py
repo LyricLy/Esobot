@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 
 from . import QwdBase, chitterclass, only
-from utils import l, aggressive_normalize, pronoun_sets, third_person_pronoun_sets
+from utils import l, aggressive_normalize, pronoun_sets, third_person_pronoun_sets, HandledConversionFailure
 
 
 async def circularize(img_data):
@@ -192,6 +192,8 @@ class Qwd(QwdBase, name="QWD"):
         await view.fill(choices)
         view.message = await ctx.send("Yes. But which one?", view=view)
         await view.wait()
+        if not view.chosen:
+            raise HandledConversionFailure()
 
         if view.will_remember:
             for choice in choices:
