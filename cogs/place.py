@@ -4,7 +4,7 @@ import re
 
 from discord.ext import commands
 
-from utils import openai
+from utils import openai, aggressive_normalize
 
 
 SYSTEM_MESSAGE = """You are a chatbot named Esobot designed to converse naturally with multiple people at once.
@@ -81,7 +81,7 @@ class EsobotPlace(commands.Cog):
             self.reset_thread()
         self.last_message_at = message.created_at
 
-        self.messages.append({"role": "user", "name": re.sub(r"[^a-zA-Z0-9_-]+", "", message.author.global_name or message.author.name), "content": message.clean_content})
+        self.messages.append({"role": "user", "name": aggressive_normalize(message.author.global_name or message.author.name, extra="-"), "content": message.clean_content})
         if self.t:
             self.t.cancel()
         self.t = self.bot.loop.create_task(self.respond())

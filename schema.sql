@@ -80,3 +80,18 @@ CREATE TABLE IF NOT EXISTS CCReacts (
     cleared_by INTEGER,
     cleared_at TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS AvatarEmoji (
+    user_id INTEGER PRIMARY KEY,
+    hash TEXT NOT NULL,
+    id INTEGER NOT NULL,
+    animated INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS SolvedAmbiguities (
+    user_id INTEGER NOT NULL,
+    alias TEXT NOT NULL,
+    winner INTEGER NOT NULL,
+    loser INTEGER NOT NULL,
+    UNIQUE (user_id, alias, winner, loser)
+);

@@ -148,7 +148,11 @@ class ChitterRow:
         l = de(cls._bot, message.content)
         if not l:
             return cls._table.pop(message.id, None)
-        if cls._table.get(message.id) != (new := cls(*l, _message=message)):
+        if (old := cls._table.get(message.id)) != (new := cls(*l, _message=message)):
+            if not old:
+                new.on_seen()
+            else:
+                new.on_update(old)
             cls._table[message.id] = new
 
     @classmethod
@@ -188,7 +192,8 @@ class ChitterRow:
 
     @classmethod
     async def on_raw_message_delete(cls, payload):
-        cls._table.pop(payload.message_id)
+        if old := cls._table.pop(payload.message_id):
+            old.on_delete()
 
     @classmethod
     def rows(cls):
@@ -230,6 +235,16 @@ class ChitterRow:
     async def delete(self):
         self._require_writable()
         await self._message.delete()
+
+    def on_seen(self):
+        pass
+
+    def on_update(self, old):
+        self.on_seen()
+        old.on_delete()
+
+    def on_delete(self):
+        pass
 
 
 def chitterclass(thread_id, *, listen_to=myself):
