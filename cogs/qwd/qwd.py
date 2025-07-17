@@ -92,7 +92,7 @@ class MemberChooser(discord.ui.View):
         self.resolve()
         await interaction.response.edit_message(content="I see." + " I'll remember that."*self.will_remember, view=self)
 
-    @discord.ui.button(label="Remember my choice", row=1)
+    @discord.ui.button(label="Remember my choice", row=4)
     async def remember(self, interaction, button):
         button.style = discord.ButtonStyle(button.style.value ^ 3)
         await interaction.response.edit_message(view=self)
