@@ -95,7 +95,9 @@ async def on_resumed():
 @bot.event
 async def on_command_error(ctx, exc):
     command_name = ctx.command.qualified_name if ctx.command else "unknown command"
-    if isinstance(exc, commands.UserInputError):
+    if isinstance(exc, (commands.CommandNotFound, HandledConversionFailure)):
+        return
+    elif isinstance(exc, commands.UserInputError):
         if isinstance(exc, commands.MissingRequiredArgument):
             description = f"Missing required argument `{exc.param.name}`."
         elif isinstance(exc, (commands.BadArgument, commands.BadUnionArgument)):
@@ -103,8 +105,6 @@ async def on_command_error(ctx, exc):
         else:
             description = f"Unknown user input exception."
         description += f"\n\nRun `{COMMAND_PREFIX}help {command_name}` to view the required arguments."
-    elif isinstance(exc, (commands.CommandNotFound, HandledConversionFailure)):
-        return
     elif isinstance(exc, commands.CheckFailure):
         if isinstance(exc, commands.NoPrivateMessage):
             description = "Cannot be used in a DM."
