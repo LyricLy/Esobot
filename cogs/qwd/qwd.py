@@ -109,7 +109,7 @@ class MemberChooser(discord.ui.View):
 
     async def on_timeout(self):
         self.resolve()
-        await self.message.edit(content="Timed out.", view=self)
+        await self.message.edit(content="Hello?", view=self)
 
     async def interaction_check(self, interaction):
         if interaction.user != self.owner:
