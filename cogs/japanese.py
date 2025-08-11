@@ -123,7 +123,7 @@ class Japanese(commands.Cog):
                 {"role": "system", "content": prompt},
                 *messages,
             ],
-            max_tokens=4096,
+            max_completion_tokens=4096,
         )
         result = completion.choices[0].message.content
 
