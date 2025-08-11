@@ -25,7 +25,7 @@ async def preferred_model(ctx):
         model, = await cur.fetchone()
     match model:
         case "openai":
-            return openai, "gpt-4.1"
+            return openai, "gpt-5"
         case "deepseek":
             return deepseek, "deepseek-chat"
 
