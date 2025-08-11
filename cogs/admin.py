@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import random
 import io
 import traceback
 
@@ -15,9 +16,31 @@ class Admin(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.emoji_map = None
 
     async def cog_check(self, ctx):
         return await commands.is_owner().predicate(ctx)
+
+    @commands.command(aliases=["ise"])
+    async def ize(self, ctx, emoji: discord.PartialEmoji | str, *, code):
+        if isinstance(emoji, str):
+            name = "-".join(f"{ord(c):x}" for c in emoji)
+            img_url = f"https://raw.githubusercontent.com/jdecked/twemoji/refs/heads/main/assets/svg/{name}.svg"
+        else:
+            # DANNY
+            img_url = (emoji.url.rsplit(".", 1)[0] + ".webp") + "?animated=true"*emoji.animated
+
+        async with self.bot.session.get(img_url) as resp:
+            if resp.status == 404:
+                return await ctx.send("That's not an emoji...")
+            img = await resp.read()
+
+        proc = await asyncio.create_subprocess_shell(f"magick -background none -density 512 - {code} webp:-", stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE)
+        out, _ = await proc.communicate(img)
+
+        name = f"ized_{random.randrange(10000)}"
+        emoji = await self.bot.get_guild(318633320890236930).create_custom_emoji(name=name, image=out)
+        await ctx.send(f"{emoji}")
 
     @commands.command(aliases=["shutdown!"], hidden=True)
     async def shutdown(self, ctx):
