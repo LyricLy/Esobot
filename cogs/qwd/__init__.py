@@ -192,7 +192,7 @@ class ChitterRow:
 
     @classmethod
     async def on_raw_message_delete(cls, payload):
-        if old := cls._table.pop(payload.message_id):
+        if old := cls._table.pop(payload.message_id, None):
             old.on_delete()
 
     @classmethod
