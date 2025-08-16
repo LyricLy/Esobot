@@ -117,17 +117,23 @@ class Japanese(commands.Cog):
             messages = [message_to_openai(m.content, urls_of_message(m)) async for m in ctx.history(limit=12)][:0:-1]
 
         lib, model = await preferred_model(ctx)
-        completion = await lib.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": prompt},
-                *messages,
-            ],
-            max_completion_tokens=4096,
-        )
+
+        async with ctx.typing():
+            completion = await lib.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": prompt},
+                    *messages,
+                ],
+                max_completion_tokens=16384,
+                store=False,
+            )
+
         result = completion.choices[0].message.content
 
-        if len(result) > 2000:
+        if not result and completion.choices[0].finish_reason == "length":
+            await show_error(ctx, "Exhausted maximum tokens while thinking!")
+        elif len(result) > 2000:
             await ctx.reply(file=discord.File(io.StringIO(result), "resp.txt"))
         else:
             await ctx.reply(result)
