@@ -198,7 +198,8 @@ class QwdInterp(QwdBase, name="Interpretation (QWD)"):
                     {"role": "system", "content": prompt},
                     message_to_openai(msg.content if msg else text, urls_of_message(msg if msg else ctx.message)),
                 ],
-                max_completion_tokens=512,
+                max_completion_tokens=1024,
+                reasoning_effort="minimal",
             )
             results.append((r, completion.choices[0].message.content))
 
