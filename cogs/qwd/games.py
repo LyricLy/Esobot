@@ -198,6 +198,10 @@ class QwdGames(QwdBase, name="Games (QWD)"):
         # however this is a trade-off for making it incredibly cheap to grab a message because we don't have to spam history calls or store any data
         t = base + datetime.timedelta(milliseconds=random.randint(0, int((datetime.datetime.utcnow() - base).total_seconds() * 1000)))
         async for message in channel.history(before=t):
+            if message.webhook_id:
+                msg = await self.bot.get_cog("PluralKit").pk_get(f"/messages/{message.id}")
+                message.author = message.guild.get_member(int(msg.get("sender", "0")))
+
             if message.content and message.content.count(" ") > 3 and message.author in message.guild.members:
                 break
 
