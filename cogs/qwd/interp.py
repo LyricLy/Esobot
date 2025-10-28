@@ -163,7 +163,7 @@ class QwdInterp(QwdBase, name="Interpretation (QWD)"):
         if not cleared_by:
             return await ctx.send("My reaction is still there, silly!")
         await ctx.send(
-            f"I reacted with <:missing_captions:1358721100695076944> to that message, and <@{cleared_by}> cleared it at {discord.utils.format_dt(cleared_at)}.",
+            f"I reacted with <:missing_captions:1358721100695076944> to that message, and <@{cleared_by}> cleared it on {discord.utils.format_dt(cleared_at)}.",
             allowed_mentions=discord.AllowedMentions.none(),
         )
 
