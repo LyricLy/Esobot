@@ -162,7 +162,7 @@ class Qwd(QwdBase, name="QWD"):
             m for m in self.qwd.members if arg in (m.name.casefold(), m.global_name and m.global_name.casefold(), m.display_name.casefold())
         ])
 
-        choices.update(Aliases.table[arg])
+        choices.update(x for x in Aliases.table[arg] if isinstance(x, discord.Member))
 
         if arg.rstrip("e") == "m" and len(arg) >= 2:
             choices.add(ctx.author)
