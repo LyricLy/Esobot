@@ -208,6 +208,7 @@ class QwdGames(QwdBase, name="Games (QWD)"):
         return message
 
     @commands.guild_only()
+    @commands.max_concurrency(1, commands.BucketType.user)
     @hwdyk.group(aliases=["msg"], invoke_without_command=True)
     async def message(self, ctx):
         """Pick a random message. If you can guess who sent it, you win!"""
@@ -221,7 +222,7 @@ class QwdGames(QwdBase, name="Games (QWD)"):
         bot_msg = await ctx.reply("Who sent this message?", embed=hidden_embed)
 
         while True:
-            r = await self.bot.wait_for("message", check=lambda m: m.channel == ctx.channel and m.author == ctx.author)
+            r = await self.bot.wait_for("message", check=lambda m: m.channel == ctx.channel and m.author == ctx.author and not m.content.startswith("!"))
             try:
                 member = await commands.MemberConverter().convert(ctx, r.content)
             except commands.BadArgument:

@@ -125,7 +125,23 @@ async def on_command_error(ctx, exc):
     elif isinstance(exc, commands.CommandOnCooldown):
         description = f"That command is on cooldown. Try again in {exc.retry_after:.1f} seconds."
     elif isinstance(exc, commands.MaxConcurrencyReached):
-        description = "This command is currently already in use. Please try again later."
+        if exc.number == 1:
+            if exc.type == commands.BucketType.default:
+                description = "This command is already in use."
+            elif exc.type == commands.BucketType.user:
+                description = "You're already using this command."
+            elif exc.type == commands.BucketType.member:
+                description = "You're already using this command in this server."
+            elif exc.type == commands.BucketType.channel:
+                description = "This command is already in use in this channel."
+            elif exc.type == commands.BucketType.category:
+                description = "This command is already in use in this category."
+            elif exc.type == commands.BucketType.guild:
+                description = "This command is already in use in this server."
+            elif exc.type == commands.BucketType.role:
+                description = "Someone with the same top role as you is already using this command."
+        else:
+            description = "This command is currently unavailable due to load. Please try again later."
     else:
         description = "Sorry, something went wrong."
         l.error(
