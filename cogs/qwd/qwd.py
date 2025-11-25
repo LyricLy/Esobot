@@ -28,7 +28,7 @@ class MemberChooser(discord.ui.View):
 
     async def avatar_emoji(self, member):
         emoji_name = aggressive_normalize(member.name)
-    
+
         async with self.bot.db.execute("SELECT hash, id, animated FROM AvatarEmoji WHERE user_id = ?", (member.id,)) as cur:
             cached = await cur.fetchone()
 
