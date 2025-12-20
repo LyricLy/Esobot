@@ -162,11 +162,13 @@ class Qwd(QwdBase, name="QWD"):
             m for m in self.qwd.members if arg in (m.name.casefold(), m.global_name and m.global_name.casefold(), m.display_name.casefold())
         ])
 
-        choices.update(x for x in Aliases.table[arg] if isinstance(x, discord.Member))
+        choices.update([x for x in Aliases.table[arg] if isinstance(x, discord.Member)])
 
         if arg.rstrip("e") == "m" and len(arg) >= 2:
             choices.add(ctx.author)
         elif arg.rstrip("u") == "yo" and len(arg) >= 3:
+            # do not consider any other bot calling itself "you"
+            choices = {choice for choice in choices if not choice.bot}
             choices.add(ctx.me)
         elif p := discord.utils.get(pronoun_sets.values(), obj=arg):
             async for msg in ctx.history(limit=15):
