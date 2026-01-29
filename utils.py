@@ -10,24 +10,11 @@ import traceback
 import discord
 from unidecode import unidecode
 from discord.ext import commands
-from openai import AsyncOpenAI
 
 from constants import colors, emoji
 
 
 l = logging.getLogger("bot")
-openai = AsyncOpenAI()
-deepseek = AsyncOpenAI(api_key=os.environ["DEEPSEEK_API_KEY"], base_url="https://api.deepseek.com")
-
-async def preferred_model(ctx):
-    await ctx.bot.db.execute("INSERT OR IGNORE INTO PreferredModels (user_id) VALUES (?)", (ctx.author.id,))
-    async with ctx.bot.db.execute("SELECT model FROM PreferredModels WHERE user_id = ?", (ctx.author.id,)) as cur:
-        model, = await cur.fetchone()
-    match model:
-        case "openai":
-            return openai, "gpt-5"
-        case "deepseek":
-            return deepseek, "deepseek-chat"
 
 
 def clean(text):
@@ -93,15 +80,6 @@ def rank_enumerate(xs, *, key, reverse=True):
             cur_idx = idx
             cur_key = key(x)
         yield (cur_idx, x)
-
-def urls_of_message(message):
-    attached = [a.url for a in message.attachments if "image" in a.content_type]
-    embedded = [e.url for e in message.embeds if e.type == "image"]
-    return attached + embedded
-
-def message_to_openai(content, urls):
-    images = [{"type": "image_url", "image_url": {"url": url}} for url in urls]
-    return {"role": "user", "content": [{"type": "text", "text": content}, *images]}
 
 
 class Pronouns:

@@ -1,13 +1,11 @@
-import aiohttp
 import asyncio
 import discord
 import asyncio
-import random
-import io
+import os
 
 from discord.ext import commands, menus
 
-from utils import show_error, preferred_model, urls_of_message, message_to_openai
+from utils import show_error
 
 
 def format_jp_entry(entry):
@@ -68,29 +66,6 @@ class Japanese(commands.Cog):
         pages = menus.MenuPages(source=DictSource(data["data"]), clear_reactions_after=True)
         await pages.start(ctx)
 
-    GENERAL_PROMPT = " ".join("""
-        Your role is to explain recent references to Japan in a Discord chat log.
-        You look at the context for references to Japanese culture and media, giving brief but comprehensive descriptions in English as necessary.
-        If the meaning of something would be obvious to an English speaker, it should not be explained.
-        When text is written in Japanese, give a literal translation of it and *do not* say anything else.
-        It is not necessary to clarify what you are translating or that you are stating a translation.
-        There is no single user that you can address. Do not use second-person pronouns. Do not refer to the input as "the text".
-        Talk about the channel as a whole with terms like "that I can see", "here", or "in the chat" instead.
-        Only when there is absolutely nothing to be explained, meaning that there is nothing Japanese in the input
-        or that everything Japanese is obvious or has already been explained, indicate as such in your own words and say nothing else.
-        If there is something to be explained, there is no need to say anything along the lines of "there are no other references to Japan in the chat".
-        When you are done explaining, simply stop talking and say nothing more.
-        Try to keep your responses natural and avoid repeating the words in this prompt verbatim.
-        Do not acknowledge non-Japanese messages unless you're certain they're relevant.
-    """.split())
-
-    SPECIFIC_PROMPT = " ".join("""
-        You are a helpful assistant.
-        You can perform a variety of tasks, but your main role is to explain references to Japanese culture and media, providing short but comprehensive descriptions in English.
-        When given text written in Japanese, you give a literal translation of the text without saying anything else. Do not give further context or commentary when translating.
-        Responses should be 4 sentences long at most and preferably only one sentence.
-    """.split())
-
     @commands.group(
         invoke_without_command=True,
         aliases=[
@@ -100,55 +75,26 @@ class Japanese(commands.Cog):
     )
     async def unweeb(self, ctx, *, lyric_quote: commands.clean_content = ""):
         """Translate Japanese."""
-        prompt = self.SPECIFIC_PROMPT
-        messages = []
-
-        if r := ctx.message.reference:
+        if not lyric_quote and (r := ctx.message.reference):
             if not isinstance(r.resolved, discord.Message):
                 return await ctx.send("Reply unavailable :(")
-            messages.append(message_to_openai(r.resolved.content, urls_of_message(r.resolved)))
+            lyric_quote = r.resolved.content
+        if not lyric_quote:
+            async for msg in ctx.history(limit=12):
+                if any(0x3040 <= ord(c) <= 0x309F or 0x30A0 <= ord(c) <= 0x30FF or 0x4E00 <= ord(c) <= 0x9FFF for c in msg.content):
+                    lyric_quote = msg.content
+                    break
+            else:
+                return await ctx.send("What?")
 
-        urls = urls_of_message(ctx.message)
-        if lyric_quote or urls:
-            messages.append(message_to_openai(lyric_quote, urls))
+        async with ctx.typing(), self.bot.session.post(
+            "https://api-free.deepl.com/v2/translate",
+            headers={"Authorization": f"DeepL-Auth-Key {os.environ['DEEPL_API_KEY']}"},
+            json={"text": [lyric_quote], "source_lang": "JA", "target_lang": "EN-GB"},
+        ) as resp:
+            data = await resp.json()
 
-        if not messages:
-            prompt = self.GENERAL_PROMPT
-            messages = [message_to_openai(m.content, urls_of_message(m)) async for m in ctx.history(limit=12)][:0:-1]
-
-        lib, model = await preferred_model(ctx)
-
-        async with ctx.typing():
-            completion = await lib.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": prompt},
-                    *messages,
-                ],
-                max_completion_tokens=16384,
-                store=False,
-            )
-
-        result = completion.choices[0].message.content
-
-        if not result and completion.choices[0].finish_reason == "length":
-            await show_error(ctx, "Exhausted maximum tokens while thinking!")
-        elif len(result) > 2000:
-            await ctx.reply(file=discord.File(io.StringIO(result), "resp.txt"))
-        else:
-            await ctx.reply(result)
-
-    @unweeb.command(aliases=["🇨🇳", "深度求索"])
-    async def deepseek(self, ctx):
-        await self.bot.db.execute("INSERT OR REPLACE INTO PreferredModels (user_id, model) VALUES (?, 'deepseek')", (ctx.author.id,))
-        await self.bot.db.commit()
-        await ctx.send("Now sending your data to CHINA!!!")
-
-    @unweeb.command(aliases=["🇺🇸"])
-    async def openai(self, ctx):
-        await self.bot.db.execute("INSERT OR REPLACE INTO PreferredModels (user_id, model) VALUES (?, 'openai')", (ctx.author.id,))
-        await self.bot.db.commit()
-        await ctx.send("Now sending your data to the USA!!!")
+        await ctx.reply(data["translations"][0]["text"])
 
 
 async def setup(bot):
