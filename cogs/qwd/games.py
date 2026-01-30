@@ -191,13 +191,14 @@ class QwdGames(QwdBase, name="Games (QWD)"):
         """How well do you know your friends?"""
 
     async def pick_random_message(self):
-        base = datetime.datetime(year=2023, month=7, day=25)
         channel = self.qwd.get_channel(1133026989637382149 if random.random() < .909 else 1133027144512049223)
 
         # this doesn't uniformly pick a random message: it strongly prefers messages sent after longer pauses
         # however this is a trade-off for making it incredibly cheap to grab a message because we don't have to spam history calls or store any data
-        t = base + datetime.timedelta(milliseconds=random.randint(0, int((datetime.datetime.utcnow() - base).total_seconds() * 1000)))
-        async for message in channel.history(before=t):
+        t = channel.created_at + (datetime.datetime.now(datetime.timezone.utc) - channel.created_at) * random.random()
+        ms = [m async for m in channel.history(around=t)]
+        random.shuffle(ms)
+        for message in ms:
             if message.webhook_id:
                 msg = await self.bot.get_cog("PluralKit").pk_get(f"/messages/{message.id}")
                 message.author = message.guild.get_member(int(msg.get("sender", "0")))
