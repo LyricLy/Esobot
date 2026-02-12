@@ -208,7 +208,6 @@ class QwdGames(QwdBase, name="Games (QWD)"):
 
         return message
 
-    @commands.guild_only()
     @commands.max_concurrency(1, commands.BucketType.user)
     @hwdyk.group(aliases=["msg"], invoke_without_command=True)
     async def message(self, ctx):
@@ -243,7 +242,6 @@ class QwdGames(QwdBase, name="Games (QWD)"):
         else:
             await r.reply("Too bad. Good luck with the next time!")
 
-    @commands.guild_only()
     @message.command(aliases=["time"])
     async def when(self, ctx, difficulty: int = 4):
         """Pick some random messages. If you can guess what order they were sent in, you win!""" 
