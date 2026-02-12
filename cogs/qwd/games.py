@@ -5,6 +5,7 @@ import random
 import json
 import functools
 from collections import Counter
+from typing import Literal
 
 import discord
 from discord.ext import commands
@@ -210,7 +211,7 @@ class QwdGames(QwdBase, name="Games (QWD)"):
 
     @commands.max_concurrency(1, commands.BucketType.user)
     @hwdyk.group(aliases=["msg"], invoke_without_command=True)
-    async def message(self, ctx):
+    async def message(self, ctx, practice: Literal["practice"] | None = None):
         """Pick a random message. If you can guess who sent it, you win!"""
 
         message = await self.pick_random_message()
@@ -230,9 +231,10 @@ class QwdGames(QwdBase, name="Games (QWD)"):
             else:
                 break
 
-        # insert into stat db
-        await self.bot.db.execute("INSERT INTO HwdykGames (player_id, guessed, actual) VALUES (?, ?, ?)", (ctx.author.id, member.id, message.author.id))
-        await self.bot.db.commit()
+        if not practice:
+            # insert into stat db
+            await self.bot.db.execute("INSERT INTO HwdykGames (player_id, guessed, actual) VALUES (?, ?, ?)", (ctx.author.id, member.id, message.author.id))
+            await self.bot.db.commit()
 
         # reveal info
         await bot_msg.edit(embed=real_embed)
