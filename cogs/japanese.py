@@ -90,7 +90,7 @@ class Japanese(commands.Cog):
         async with ctx.typing(), self.bot.session.post(
             "https://api-free.deepl.com/v2/translate",
             headers={"Authorization": f"DeepL-Auth-Key {os.environ['DEEPL_API_KEY']}"},
-            json={"text": [lyric_quote], "source_lang": "JA", "target_lang": "EN-GB"},
+            json={"text": [lyric_quote], "target_lang": "EN-GB"},
         ) as resp:
             data = await resp.json()
 
