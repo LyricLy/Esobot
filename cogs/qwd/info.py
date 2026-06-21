@@ -441,7 +441,7 @@ class QwdInfo(QwdBase, name="User info (QWD)"):
         async with self.bot.session.get(f"https://wttr.in/{location}", params={"format": "j1"}) as resp:
             if resp.status >= 400:
                 return await ctx.send("Unknown location.")
-            data = await resp.json()
+            data = await resp.json(content_type=None)
 
         area = ", ".join([t for k in ["areaName", "region", "country"] if (t := data["nearest_area"][0][k][0]["value"])])
         current = data["current_condition"][0]
