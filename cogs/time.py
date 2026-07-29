@@ -47,7 +47,10 @@ class Time(commands.Cog):
         )
         if user.id == 319753218592866315:
             p = get_pronouns(user)
-            embed.add_field(name="Warning", value=f"This user's schedule is unstable and rather arbitrary. Apply caution before using {p.pos_det} current time to extrapolate information.")
+            embed.add_field(
+                name="Advisory",
+                value=f"LyricLy's schedule was historically rather arbitrary (non-24-hour). However, {p.pos_det} symptoms have improved and the time is now more reliable.",
+            )
         await ctx.send(embed=embed)
 
     @time.command()
