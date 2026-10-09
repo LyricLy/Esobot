@@ -11,7 +11,7 @@ from utils import l, aggressive_normalize, pronoun_sets, third_person_pronoun_se
 
 async def circularize(img_data):
     proc = await asyncio.create_subprocess_shell(
-        r"magick - -write mpr:img null: \( mpr:img -alpha extract -coalesce null: assets/circle.png -compose multiply -layers composite \) -compose copy_alpha -layers composite -",
+        r"magick - -resize 128x128 -write mpr:img null: \( mpr:img -alpha extract -coalesce null: assets/circle.png -compose multiply -layers composite \) -compose copy_alpha -layers composite -",
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
     )
@@ -32,7 +32,7 @@ class MemberChooser(discord.ui.View):
         async with self.bot.db.execute("SELECT hash, id, animated FROM AvatarEmoji WHERE user_id = ?", (member.id,)) as cur:
             cached = await cur.fetchone()
 
-        if cached and cached["hash"] == member.avatar.key:
+        if cached and cached["hash"] == member.display_avatar.key:
             # hit
             _, emoji_id, animated = cached
             yield discord.PartialEmoji.from_str("a:"*animated + f"{emoji_name}:{emoji_id}")
@@ -41,7 +41,10 @@ class MemberChooser(discord.ui.View):
         # miss
         yield discord.PartialEmoji.from_str("<a:loading:1395166109673455688>")
 
-        asset = member.avatar.with_format("webp").with_size(128)
+        if member.guild_avatar or member.avatar:
+            asset = member.display_avatar.with_format("webp").with_size(128)
+        else:
+            asset = member.default_avatar
         # Danny what the fuck
         asset._url += "&animated=true"*asset.is_animated()
         cropped = await circularize(await asset.read())
@@ -52,7 +55,7 @@ class MemberChooser(discord.ui.View):
             await old.delete()
         emoji = await self.bot.create_application_emoji(name=emoji_name, image=cropped)
 
-        await self.bot.db.execute("INSERT OR REPLACE INTO AvatarEmoji (user_id, hash, id, animated) VALUES (?, ?, ?, ?)", (member.id, member.avatar.key, emoji.id, emoji.animated))
+        await self.bot.db.execute("INSERT OR REPLACE INTO AvatarEmoji (user_id, hash, id, animated) VALUES (?, ?, ?, ?)", (member.id, member.display_avatar.key, emoji.id, emoji.animated))
         await self.bot.db.commit()
 
         yield emoji
