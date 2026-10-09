@@ -268,7 +268,7 @@ class Games(commands.Cog):
         if not member:
             def render(rs, key=lambda r: Winrate(r["correct"], r["total"]), display=str, reverse=False):
                 l = []
-                for rank, r in rank_enumerate(rs, key=key):
+                for rank, r in rank_enumerate(rs, key=key, reverse=reverse):
                     if rank > 5:
                         break
                     l.append(f"{rank}: <@{r[0]}> - {display(key(r))}")

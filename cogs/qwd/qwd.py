@@ -145,13 +145,53 @@ class Qwd(QwdBase, name="QWD"):
         commands.MemberConverter.convert = self.old_convert
 
     async def convert(self, converter, ctx, argument):
-        if ctx.guild != self.qwd:
+        if ctx.guild == self.qwd:
+            table = Aliases.table
+        elif ctx.guild.id == 1414789939773833238:
+            table = defaultdict(list, {
+                "xyz": [ctx.guild.get_member(5908674421653504)],
+                "alex": [ctx.guild.get_member(712918252799524945), ctx.guild.get_member(236831708354314240)],
+                "femgirl": [ctx.guild.get_member(712918252799524945)],
+                "femgal": [ctx.guild.get_member(712918252799524945)],
+                "tomboy": [ctx.guild.get_member(712918252799524945)],
+                "femgallium": [ctx.guild.get_member(712918252799524945)],
+                "bean": [ctx.guild.get_member(1150987229762686986)],
+                "beany": [ctx.guild.get_member(1150987229762686986)],
+                "ben": [ctx.guild.get_member(806339848368685076)],
+                "crox": [ctx.guild.get_member(719895026078842902)],
+                "cyan": [ctx.guild.get_member(699039991208345751)],
+                "danman": [ctx.guild.get_member(765591187213385739)],
+                "infy": [ctx.guild.get_member(1006535466138480681)],
+                "iphony": [ctx.guild.get_member(193708921985302528)],
+                "kai": [ctx.guild.get_member(1016343277814956154)],
+                "koko": [ctx.guild.get_member(697876621373210664)],
+                "lyric": [ctx.guild.get_member(319753218592866315)],
+                "maverick": [ctx.guild.get_member(908846708715302983)],
+                "mavie": [ctx.guild.get_member(908846708715302983)],
+                "nath": [ctx.guild.get_member(539942597486051329)],
+                "night": [ctx.guild.get_member(693443838370381874)],
+                "olus": [ctx.guild.get_member(339009650592710656)],
+                "pineclones": [ctx.guild.get_member(830399029161885757)],
+                "sammy": [ctx.guild.get_member(1129179243620872265)],
+                "sprite": [ctx.guild.get_member(1345139493321310249)],
+                "sue": [ctx.guild.get_member(754541960181841962)],
+                "suethegov": [ctx.guild.get_member(754541960181841962)],
+                "temp": [ctx.guild.get_member(703645091901866044)],
+                "umni": [ctx.guild.get_member(236831708354314240)],
+                "ungealz": [ctx.guild.get_member(856312866436022272)],
+                "whis": [ctx.guild.get_member(723464246935027733)],
+                "whys": [ctx.guild.get_member(723464246935027733)],
+                "wickedmoon": [ctx.guild.get_member(834527934572265493)],
+                "wickedmoon42": [ctx.guild.get_member(834527934572265493)],
+                "zz": [ctx.guild.get_member(267341224409563147)],
+            })
+        else:
             return await self.old_convert(converter, ctx, argument)
 
         choices = set()
 
         thought = argument.removeprefix("<@").removeprefix("!").removesuffix(">")
-        if thought.isdigit() and (user := self.qwd.get_member(int(thought))):
+        if thought.isdigit() and (user := ctx.guild.get_member(int(thought))):
             choices.add(user)
 
         # ignore any attempt at a discrim
@@ -159,10 +199,10 @@ class Qwd(QwdBase, name="QWD"):
 
         choices.update([
        # band for band
-            m for m in self.qwd.members if arg in (m.name.casefold(), m.global_name and m.global_name.casefold(), m.display_name.casefold())
+            m for m in ctx.guild.members if arg in (m.name.casefold(), m.global_name and m.global_name.casefold(), m.display_name.casefold())
         ])
 
-        choices.update([x for x in Aliases.table[arg] if isinstance(x, discord.Member)])
+        choices.update([x for x in table[arg] if isinstance(x, discord.Member)])
 
         if arg.rstrip("e") == "m" and len(arg) >= 2:
             choices.add(ctx.author)
