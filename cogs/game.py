@@ -68,7 +68,7 @@ class Winrate:
     s: int = 0
     n: int = 0
 
-    def interval(self) -> tuple[float, float]:
+    def interval(self):
         z = 3
         s = self.s
         n = self.n
@@ -76,24 +76,24 @@ class Winrate:
         divisor = 1 + z*z / n
         return (avg + z*z/(2*n)) / divisor, z/(2*n) * math.sqrt(4 * n * avg * (1-avg) + z*z) / divisor
 
-    def centre(self) -> float:
+    def centre(self):
         return self.interval()[0]
 
-    def lower_bound(self) -> float:
+    def lower_bound(self):
         centre, radius = self.interval()
         return centre - radius
 
-    def upper_bound(self) -> float:
+    def upper_bound(self):
         centre, radius = self.interval()
         return centre + radius
 
-    def _ord_key(self) -> float:
+    def _ord_key(self):
         try:
             return self.lower_bound()
         except ZeroDivisionError:
             return float("-inf")
 
-    def __str__(self) -> str:
+    def __str__(self):
         try:
             centre, radius = self.interval()
         except ZeroDivisionError:
@@ -101,28 +101,28 @@ class Winrate:
         else:
             return f"{centre:.2%} ± {radius:.2%} ({self.s}/{self.n})"
 
-    def __add__(self, other: Winrate) -> Winrate:
+    def __add__(self, other):
         return Winrate(self.s + other.s, self.n + other.n)
 
-    def __sub__(self, other: Winrate) -> Winrate:
+    def __sub__(self, other):
         return Winrate(self.s - other.s, self.n - other.n)
 
-    def __lt__(self, other: Winrate) -> bool:
+    def __lt__(self, other):
         if not isinstance(other, Winrate):
             return NotImplemented
         return self._ord_key() < other._ord_key()
 
-    def __le__(self, other: Winrate) -> bool:
+    def __le__(self, other):
         if not isinstance(other, Winrate):
             return NotImplemented
         return self._ord_key() <= other._ord_key()
 
-    def __gt__(self, other: Winrate) -> bool:
+    def __gt__(self, other):
         if not isinstance(other, Winrate):
             return NotImplemented
         return self._ord_key() > other._ord_key()
 
-    def __ge__(self, other: Winrate) -> bool:
+    def __ge__(self, other):
         if not isinstance(other, Winrate):
             return NotImplemented
         return self._ord_key() >= other._ord_key()
