@@ -285,7 +285,11 @@ class Games(commands.Cog):
 
             async with self.bot.db.execute("SELECT author_id, COUNT(*) as total, SUM(guess = author_id) as correct FROM HwdykGames WHERE guild_id = ? GROUP BY author_id", (ctx.guild.id,)) as cur:
                 items = await cur.fetchall()
-            embed.add_field(name="Hardest to guess", value=render(items))
+            embed.add_field(name="Hardest to guess", value=render(
+                items,
+                key=lambda r: (wr.upper_bound() if (wr := Winrate(r["correct"], r["total"])).n else float("inf"), wr),
+                display=lambda t: str(t[1]),
+            ))
             embed.add_field(name="Easiest to guess", value=render(items, reverse=True))
             embed.set_footer(text=f"Statistics only for this server, {ctx.guild.name}")
 
