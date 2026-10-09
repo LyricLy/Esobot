@@ -134,16 +134,19 @@ class ChitterRow:
     _message: discord.Message = field(kw_only=True, repr=False)
 
     synced = False
+    _thread = None
     _sync_task = None
     _added_listeners = False
 
     @classmethod
-    def thread(cls):
-        return QwdBase.qwd.get_thread(cls._thread_id)
+    async def thread(cls):
+        if not cls._thread:
+            cls._thread = QwdBase.qwd.get_thread(cls._thread_id) or await QwdBase.qwd.fetch_channel(cls._thread_id)
+        return cls._thread
 
     @classmethod
     def _see_message(cls, message):
-        if message.channel != cls.thread() or not cls._listen_to(cls._bot, message.author):
+        if message.channel.id != cls._thread_id or not cls._listen_to(cls._bot, message.author):
             return
         l = de(cls._bot, message.content)
         if not l:
@@ -169,7 +172,8 @@ class ChitterRow:
             bot.add_listener(cls.on_raw_message_delete)
             cls._added_listeners = True
 
-        async for message in cls.thread().history(limit=None):
+        thread = await cls.thread()
+        async for message in thread.history(limit=None):
             cls._see_message(message)
 
         cls.synced = True
@@ -220,9 +224,11 @@ class ChitterRow:
 
     @classmethod
     async def insert(cls, *args, **kwargs):
+        thread = await cls.thread()
         cls._require_writable()
         us = cls(*args, **kwargs, _message=None)
-        us._message = await cls.thread().send(str(us), allowed_mentions=discord.AllowedMentions.none())
+        thread = await cls.thread()
+        us._message = await thread.send(str(us), allowed_mentions=discord.AllowedMentions.none())
         cls._table[us._message.id] = us
         return us
 
