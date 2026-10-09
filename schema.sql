@@ -54,9 +54,26 @@ CREATE TABLE IF NOT EXISTS LeaderboardData (
 );
 
 CREATE TABLE IF NOT EXISTS HwdykGames (
+    played_at TIMESTAMP,
     player_id INTEGER NOT NULL,
-    guessed INTEGER NOT NULL,
-    actual INTEGER NOT NULL
+    guild_id INTEGER NOT NULL,
+    message_id INTEGER,
+    guess INTEGER NOT NULL,
+    author_id INTEGER NOT NULL,
+    player_mu DOUBLE NOT NULL,
+    player_sigma DOUBLE NOT NULL,
+    author_mu DOUBLE NOT NULL,
+    author_sigma DOUBLE NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS games_by_player ON HwdykGames (player_id, played_at);
+CREATE INDEX IF NOT EXISTS games_by_author ON HwdykGames (author_id, played_at);
+
+CREATE TABLE IF NOT EXISTS HwdykChannels (
+    guild_id INTEGER NOT NULL,
+    channel_id INTEGER NOT NULL,
+    weight INTEGER NOT NULL,
+    PRIMARY KEY (guild_id, channel_id)
 );
 
 CREATE TABLE IF NOT EXISTS Limes (
@@ -68,11 +85,6 @@ CREATE TABLE IF NOT EXISTS ConnectionsPuzzles (
     title TEXT NOT NULL,
     owner INTEGER NOT NULL,
     categories TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS PreferredModels (
-    user_id INTEGER PRIMARY KEY,
-    model TEXT NOT NULL DEFAULT "openai"
 );
 
 CREATE TABLE IF NOT EXISTS CCReacts (
