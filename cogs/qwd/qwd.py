@@ -152,7 +152,7 @@ class Qwd(QwdBase, name="QWD"):
             table = Aliases.table
         elif ctx.guild.id == 1414789939773833238:
             table = defaultdict(list, {
-                "xyz": [ctx.guild.get_member(5908674421653504)],
+                "xyz": [ctx.guild.get_member(835908674421653504)],
                 "alex": [ctx.guild.get_member(712918252799524945), ctx.guild.get_member(236831708354314240)],
                 "femgirl": [ctx.guild.get_member(712918252799524945)],
                 "femgal": [ctx.guild.get_member(712918252799524945)],
