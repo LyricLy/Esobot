@@ -279,7 +279,7 @@ class Games(commands.Cog):
                     l.append(f"{rank}: <@{r[0]}> - {display(key(r))}")
                 return "\n".join(l)
 
-            async with self.bot.db.execute("SELECT player_id, player_mu, player_sigma, MAX(played_at) AS played_at FROM HwdykGames WHERE guild_id = ? GROUP BY player_id", (ctx.guild.id,)) as cur:
+            async with self.bot.db.execute("SELECT player_id, player_mu, player_sigma, played_at, MAX(played_at) FROM HwdykGames WHERE guild_id = ? GROUP BY player_id", (ctx.guild.id,)) as cur:
                 players = await cur.fetchall()
             embed.add_field(name="Best players", value=render(
                 players,
