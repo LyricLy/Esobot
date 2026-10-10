@@ -160,15 +160,20 @@ class Games(commands.Cog):
 
         return message
 
+    def rating_from_row(self, r, kind="player"):
+        mu = f"{kind}_mu"
+        sigma = f"{kind}_sigma"
+        days = (datetime.datetime.now(datetime.timezone.utc) - r["played_at"]).days - 30
+        if days > 0:
+            r[sigma] = min(r[sigma] + 0.05 * days, model.sigma)
+        return model.rating(r[mu], r[sigma])
+
     async def get_rating(self, guild, user, kind="player"):
         async with self.bot.db.execute(f"SELECT played_at, {kind}_mu, {kind}_sigma FROM HwdykGames WHERE guild_id = ? AND {kind}_id = ? ORDER BY played_at DESC, rowid DESC LIMIT 1", (guild.id, user.id,)) as cur:
             r = await cur.fetchone()
         if not r:
             return model.rating()
-        days = (datetime.datetime.now(datetime.timezone.utc) - r["played_at"]).days - 30
-        if days > 0:
-            r[2] = min(r[2] + 0.05 * days, model.sigma)
-        return model.rating(r[1], r[2])
+        return self.rating_from_row(r, kind)
 
     @commands.group(invoke_without_command=True)
     @commands.max_concurrency(1, commands.BucketType.user)
@@ -274,12 +279,12 @@ class Games(commands.Cog):
                     l.append(f"{rank}: <@{r[0]}> - {display(key(r))}")
                 return "\n".join(l)
 
-            async with self.bot.db.execute("SELECT player_id, player_mu, player_sigma, MAX(played_at) FROM HwdykGames WHERE guild_id = ? GROUP BY player_id", (ctx.guild.id,)) as cur:
+            async with self.bot.db.execute("SELECT player_id, player_mu, player_sigma, MAX(played_at) AS played_at FROM HwdykGames WHERE guild_id = ? GROUP BY player_id", (ctx.guild.id,)) as cur:
                 players = await cur.fetchall()
             embed.add_field(name="Best players", value=render(
                 players,
-                key=lambda r: model.rating(r["player_mu"], r["player_sigma"]).ordinal(target=1000, alpha=21),
-                display=lambda k: f"{k:.0f}",
+                key=self.rating_from_row,
+                display=lambda k: f"{k.ordinal(target=1000, alpha=21):.0f}",
                 reverse=True,
             ), inline=False)
 
